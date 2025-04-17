@@ -1,1 +1,68 @@
-Pseudocode here
+Psuedocode here
+
+
+=========================== JACKSON ===========================
+import pygame
+from pydub import audiosegment
+import io
+
+DEFINE play_pause()
+    Play/pause music
+
+DEFINE reverse()
+    reverse music
+
+DEFINE speed()
+    show speed
+    INPUT wanted speed (float, 1.00 is normal)
+    change song speed
+    
+DEFINE start_song(song)
+    if shuffle is TRUE:
+        song = get random song from playlist
+    else:
+        pass
+    Run song
+
+DEFINE skip_song(shuffle)
+    if shuffle is TRUE:
+        get random song from playlist
+    else:
+        get next song from playlist
+    quene next song
+    run next song
+
+DEFINE volume()
+    show volume
+    INPUT wanted volume (0-100)
+    set volume
+
+
+========================== ALEC ===========================
+Functoins to save and load data
+
+IMPORT pandas
+
+FUNCToiN to make the CSV into a dicoinary, format: { "name": [], "playlists": []}
+    SET dicoinary songs to empty dictoinary {}
+    OPEN songs CSV as pandas dataframe
+    USE pandas to make the dataframe into a dictoinary
+
+FUNCToiN to make the dictoinary into a CSV file
+    USE pandas to make songs dictoinary into dataframe
+    WRITE pandas dictoinary to songs CSV
+    
+
+FUNCTOIN to make songs dictoinary into a dictoinary of dictoinaries, each is a playlist
+    
+========================== VINCENT ===========================
+Display things using tkinter
+
+MAIN FUNCTION
+
+
+========================== SAWYER ===========================
+                            gay ^
+Get on the pseudocode Sawyer.
+
+Declerpation pof independance
