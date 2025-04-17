@@ -37,6 +37,17 @@ DEFINE volume()
     INPUT wanted volume (0-100)
     set volume
 
+DEFINE next_song()
+    get song from playlist
+    previous = current song
+    play next song
+
+DEFINE previous song()
+    play previous
+    show "cant go back more than 1 song"
+
+DEFINE replay song()
+    replay current song pygame
 
 ========================== ALEC ===========================
 Functoins to save and load data
@@ -54,7 +65,28 @@ FUNCToiN to make the dictoinary into a CSV file
     
 
 FUNCTOIN to make songs dictoinary into a dictoinary of dictoinaries, each is a playlist
-    
+    SET playlists dictoinary to {}
+    REPEAT for every item in the songs dicoinary playlists, called x`
+        REPEAT for every item in x, called y
+            IF y is in playlists dictoinary THEN
+                ADD songs dictoinary name at index x of songs dictoinary playlists
+            ELSE IF y is not in playlists dictoinary THEN
+                SET playlists dictoinary y to empty list []
+                ADD songs dictoinary name at index x of songs dictoinary playlists
+
+
+FUNCtOIN to make playlists dictoinary into one dictoinary
+    SET songs dictoinary to empty dicoinary {}
+    SET songs dictoinary to dictoinary with "name" and "playlists"
+    REPEAT for every item in playlists dictoinary, called x
+        REPEAT for every item in the item, called y
+            ADD list to songs dictoinary playlists
+            IF y is not in songs dictoinary names THEN
+                ADD the item to songs dictoinary names
+            
+            ADD x to the list created
+
+            
 ========================== VINCENT ===========================
 Display things using tkinter
 
@@ -62,7 +94,53 @@ MAIN FUNCTION
 
 
 ========================== SAWYER ===========================
-                            gay ^
-Get on the pseudocode Sawyer.
+def Create_Playlist
+    get the name for the playlist
+    song_amount = 0
 
-Declerpation pof independance
+    forever loop
+        ask if they want to add a song
+        
+        if yes
+            ask for the mp3
+            add playlist affix to selected song
+            song_amount add 1
+        if no
+            break out of the loop
+    
+    if song_amount = 0
+        add playlist affix to default songs
+    
+    call save songs function with givin info
+    
+
+def Access_pl, anytime someone says print, it's being displayed on a tkinter window.
+Using TABS, gunna be so much fun. ;)aylist
+
+    playlists = call songs csv file
+    show list of playlist names
+    
+    playlist_picked = ask for which playlist they want to access
+    
+    Ask if they want to 1. View Songs, 2. Add song, 3. Remove Song, 4. Delete Playlist, 5. Go back
+
+    if they chose 1
+        Show list of playlist_picked songs
+        
+        Ask if they want to 1. Play Song, 2. Go Back
+
+        if they chose 1
+            call Start_Song_Function
+        if they chose 2
+            call main menu
+        else
+            print that that is not an option
+    
+    if they chose 2
+        ask for the mp3
+        add playlist affix to selected song
+        call songs to playlists with info
+    
+
+        
+        
