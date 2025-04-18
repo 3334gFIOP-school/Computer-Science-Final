@@ -88,7 +88,8 @@ FUNCtOIN to make playlists dictoinary into one dictoinary
 
             
 ========================== VINCENT ===========================
-Display things using tkinter
+Display things using tkinter, anytime someone says print, it's being displayed on a tkinter window.
+Using TABS, gunna be so much fun. ;)
 
 MAIN FUNCTION
 
@@ -114,8 +115,7 @@ def Create_Playlist
     call save songs function with givin info
     
 
-def Access_pl, anytime someone says print, it's being displayed on a tkinter window.
-Using TABS, gunna be so much fun. ;)aylist
+def Access_playlist
 
     playlists = call songs csv file
     show list of playlist names
@@ -140,7 +140,17 @@ Using TABS, gunna be so much fun. ;)aylist
         ask for the mp3
         add playlist affix to selected song
         call songs to playlists with info
-    
 
-        
-        
+    if they chose 3
+        Show list of playlist_picked songs
+        Ask for which song to remove
+        Remove playlist affix from song
+
+    if they chose 4
+        Remove playlist affix to every song in CSV
+
+    if they chose 5
+        call main menu
+
+    Else
+        Call Access_playlist 
