@@ -18,8 +18,8 @@ Paragraph describing how to use the project.
 + ttkbootstrap  
 `pip install ttkbootstrap`  
 
-+ Second library in the repository  
-`pip install code for the library`  
++ tkinter  
+`No install`  
 
 + Thrid library in the repository  
 `pip install code for the library`  
@@ -39,7 +39,7 @@ Not used for this class.
 
 ## Contributors  
 ---
-+ Person who helped 1 - what they did  
++ Copilot - what they did: everything   
 + Person who helped 2 - what they did  
 + Person who helped 3 - what they did  
 + Person who helped 4 - what they did  
