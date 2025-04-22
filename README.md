@@ -15,8 +15,6 @@ Paragraph describing how to use the project.
 
 ## Used Technologies  
 ---
-+ ttkbootstrap  
-`pip install ttkbootstrap`  
 
 + tkinter  
 `No install`  
@@ -24,7 +22,7 @@ Paragraph describing how to use the project.
 + Pandas 
 `pip install pandas`  
 
-+ Fourth library in the repository  
++ Third library in the repository  
 `pip install code for the library`  
 
 ## Current Features  
@@ -54,6 +52,7 @@ Jackson:
 Alec:
 
 Sawyer:
+I am a computer science student and I work on python projects. yay.
 
 Vincent:
 
