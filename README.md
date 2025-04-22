@@ -19,8 +19,8 @@ Paragraph describing how to use the project.
 + tkinter  
 `No install`  
 
-+ Thrid library in the repository  
-`pip install code for the library`  
++ Pandas 
+`pip install pandas`  
 
 + Fourth library in the repository  
 `pip install code for the library`  
