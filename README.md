@@ -15,8 +15,6 @@ Paragraph describing how to use the project.
 
 ## Used Technologies  
 ---
-+ ttkbootstrap  
-`pip install ttkbootstrap`  
 
 + tkinter  
 `No install`  
