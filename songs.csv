@@ -1,0 +1,5 @@
+song,playlists
+example1,"['playlist1', 'playlist2']"
+example2,"['playlist2', 'playlist3']"
+example3,"['playlist3', 'playlist4']"
+example4,"['playlist4', 'playlist1']"
