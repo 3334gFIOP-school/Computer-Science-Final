@@ -1,63 +1,63 @@
 import tkinter as tk
 
-class MultiSelectCombobox(tk.Frame):
+class MultiSelectListbox(tk.Frame):
     def __init__(self, master, options, **kwargs):
         super().__init__(master, **kwargs)
         self.options = options
-        self.vars = {}
 
-        # Display field
-        self.display = tk.Entry(self, state='readonly')
-        self.display.pack(fill='x')
-        self.display.bind('<Button-1>', self.toggle_menu)
+        # Frame for the Listbox and Scrollbar
+        self.listbox_frame = tk.Frame(self)
+        self.listbox_frame.pack(fill='both', expand=True, padx=5, pady=5)
 
-        # Toplevel dropdown menu
-        self.menu = tk.Toplevel(self)
-        self.menu.withdraw()  # Hide initially
-        self.menu.overrideredirect(True)
-        self.menu.attributes("-topmost", True)
+        # Scrollbar
+        self.scrollbar = tk.Scrollbar(self.listbox_frame, orient='vertical')
+        self.scrollbar.pack(side='right', fill='y')
 
-        # Populate checkboxes
+        # Listbox
+        self.listbox = tk.Listbox(
+            self.listbox_frame,
+            selectmode='multiple',
+            yscrollcommand=self.scrollbar.set
+        )
+        self.listbox.pack(side='left', fill='both', expand=True)
+
+        # Configure the scrollbar to work with the Listbox
+        self.scrollbar.config(command=self.listbox.yview)
+
+        # Populate the Listbox with options
         for option in options:
-            var = tk.BooleanVar()
-            cb = tk.Checkbutton(self.menu, text=option, variable=var, command=self.update_display)
-            cb.pack(anchor='w')
-            self.vars[option] = var
+            self.listbox.insert(tk.END, option)
 
-        # Handle clicks outside to close menu
-        self.menu.bind("<FocusOut>", lambda e: self.menu.withdraw())
+    def print_selected_items(self):
+        # Print selected items in the terminal
+        selected_indices = self.listbox.curselection()
+        selected = [self.listbox.get(i) for i in selected_indices]
+        print(selected)
 
-    def toggle_menu(self, event=None):
-        if self.menu.winfo_ismapped():
-            self.menu.withdraw()
-        else:
-            x = self.winfo_rootx()
-            y = self.winfo_rooty() + self.winfo_height()
-            self.menu.geometry(f"+{x}+{y}")
-            self.menu.deiconify()
-            self.menu.focus_set()
+    def clear_selection(self):
+        # Clear all selections in the Listbox
+        self.listbox.selection_clear(0, tk.END)
 
-    def update_display(self):
-        selected = [opt for opt, var in self.vars.items() if var.get()]
-        self.display.config(state='normal')
-        self.display.delete(0, tk.END)
-        self.display.insert(0, ', '.join(selected))
-        self.display.config(state='readonly')
-
-    def get_selected(self):
-        return [opt for opt, var in self.vars.items() if var.get()]
 
 # Example usage
-if __name__ == '__main__':
+if __name__ == "__main__":
     root = tk.Tk()
-    root.title("Multi-Select ComboBox Example")
+    root.title("MultiSelect Listbox Example")
 
-    multi_combo = MultiSelectCombobox(root, ['Option A', 'Option B', 'Option C'])
-    multi_combo.pack(pady=20, padx=20)
+    # Example options
+    options = ["Option 1", "Option 2", "Option 3", "Option 4"]
 
-    def show_selection():
-        print("Selected:", multi_combo.get_selected())
+    # Create and pack the MultiSelectListbox
+    listbox = MultiSelectListbox(root, options)
+    listbox.pack(padx=10, pady=10, fill='both', expand=True)
 
-    tk.Button(root, text="Get Selected", command=show_selection).pack(pady=10)
+    # Add a button to clear selected items
+    clear_button = tk.Button(root, text="Clear selection", command=listbox.clear_selection)
+    clear_button.pack(pady=10)
 
+    # Add a button to print selected items
+    show_button = tk.Button(root, text="Show selected items", command=listbox.print_selected_items)
+    show_button.pack(pady=10)
+
+    # Run the application
     root.mainloop()

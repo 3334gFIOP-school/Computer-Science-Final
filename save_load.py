@@ -50,20 +50,22 @@ def playlists_to_songs(playlists):
         'song': {},
         'playlists': {}
     }
+
+    #add songs
     for ind, playlist_list in enumerate(playlists.values()):
-        for playlist in playlist_list:
-            #if the song is not already in the songs dictoinary, add the song to the songs
-            if playlists not in songs['song'].values():
-                songs['song'][ind] = playlist
+        for i, song in enumerate(playlist_list):
+            if song not in songs['song'].values():
+                songs['song'][i+ind] = song
+                songs['playlists'][i+ind] = []
 
-    print(songs)
+    #add playlists
+    for playlist in playlists:
+        for song in playlists[playlist]:
+            for ind in songs['song']:
+                if songs['song'][ind] == song:
+                    songs['playlists'][ind].append(playlist)
+
+    return songs
 
 
-load({'song': {0:'example1', 1:'example2', 2:'example3', 3:'example4'}, 'playlists': {0:['playlist1','playlist2'],1:['playlist2','playlist3'],2:['playlist3','playlist4'],3:['playlist4','playlist1']}},'songs.csv')
-songs = save('songs.csv')
-print(songs)
 
-playlists = songs_to_playlists(songs)
-print(playlists)
-
-playlists_to_songs(playlists)
