@@ -72,6 +72,6 @@ def playlists_to_songs(playlists):
 songs = save('songs.csv')
 print(songs)
 songs = songs_to_playlists(songs)
-print(songs)
+print(songs.keys())
 songs = playlists_to_songs(songs)
 print(songs)
