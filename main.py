@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from audio import play_song
 
 def main(repeat):
     root = tk.Tk()
@@ -26,18 +27,22 @@ def main(repeat):
 
     notebook.add(menu, text="Menu")
     notebook.add(test_tab, text="Test Tab")  # Add the test tab to the notebook
+    notebook.add(ply_sng, text="Music Player")
     notebook.pack(expand=True, fill="both")
 
     # Function to populate the "menu" frame
     def populate_menu():
-        ttk.Label(menu, text="Label 1").pack(pady=5)
+        ttk.Label(menu, text="Welcome to Music Player!\nSelect a tab to continue").pack(pady=5)
 
     # Populate the "menu" frame initially
     populate_menu()
 
+
+    attention = ("Helvetica", 20, "bold")
     # Add some widgets to the "test_tab" frame
-    ttk.Label(test_tab, text="This is the Test Tab").pack(pady=10)
-    ttk.Button(test_tab, text="Test Button", command=lambda: print("Test Button Clicked")).pack(pady=10)
+    tk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10, columnspan=3)
+    pse_ply = tk.Button(ply_sng, text="▶", command=lambda: play_song(pse_ply), font=attention)
+    pse_ply.grid(row=1, column=1, padx=10, pady=10, columnspan=3)
 
     # Function to clear all widgets from a frame
     def clear_frame(frame):
@@ -58,8 +63,7 @@ def main(repeat):
     notebook.bind("<<NotebookTabChanged>>", on_tab_changed)
 
     # Add a button to clear the "menu" frame
-    ttk.Button(root, text="Clear Menu", command=lambda: clear_frame(menu)).pack(pady=10)
-
+    root.geometry("300x200")
     root.mainloop()
 
 repeat = True
