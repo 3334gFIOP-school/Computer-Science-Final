@@ -6,3 +6,6 @@ def play_song(pse_ply):
     else:
         # Use a consistent font size for "Play"
         pse_ply.config(text="▶", font=("Helvetica", 20, "bold"))  # Slightly larger font for play
+
+def fast_forward():
+    pass
