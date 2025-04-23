@@ -16,14 +16,17 @@ Paragraph describing how to use the project.
 ## Used Technologies  
 ---
 
-+ tkinter  
++ Tkinter  
 `No install`  
 
 + Pandas 
 `pip install pandas`  
 
-+ Third library in the repository  
-`pip install code for the library`  
++ Pydub
+`pip install pydub`  
+
++ Pygame
+`pip install Pygame`
 
 ## Current Features  
 ---
