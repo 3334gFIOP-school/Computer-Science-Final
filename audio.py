@@ -1,8 +1,26 @@
-def play_song(pse_ply):
+# Audio Handling - Jackson Hauley
+
+import tkinter as tk
+import pygame
+
+def play_song(pse_ply, file_path):
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)  # Parameter for file path
+    pygame.mixer.music.play()
     current_text = pse_ply["text"]
     if current_text == "▶":
         # Adjust font size for "Pause" to make it visually similar to "Play"
-        pse_ply.config(text="⏸", font=("Helvetica", 20, "bold"))  # Slightly smaller font for pause
+        pse_ply.config(text="⏸", font=("Helvetica", 20, "bold"))  
+        try:
+            pygame.mixer.music.unpause()
+            print("Playing song")
+        except pygame.error as e:
+            print(f"Error playing song: {e}")
     else:
         # Use a consistent font size for "Play"
-        pse_ply.config(text="▶", font=("Helvetica", 20, "bold"))  # Slightly larger font for play
+        pse_ply.config(text="▶", font=("Helvetica", 20, "bold"))  
+        pygame.mixer.music.pause()
+
+# Keep the program running so you can hear it
+while pygame.mixer.music.get_busy():
+    continue
