@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
-from audio import play_song
+from audio import play_song, change_speed, set_volume
 
 def main(repeat):
     root = tk.Tk()
@@ -37,15 +36,44 @@ def main(repeat):
     # Populate the "menu" frame initially
     populate_menu()
 
-
     attention = ("Helvetica", 20, "bold")
-    # Add some widgets to the "test_tab" frame
+    # Add some widgets to the "ply_sng" frame
     tk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10, columnspan=3)
-    pse_ply = tk.Button(ply_sng, text="⏸", command=lambda: play_song(pse_ply), font=attention)
-    pse_ply.config(text="▶", font=("Helvetica", 20, "bold"))
+    pse_ply = tk.Button(
+        ply_sng,
+        text="▶",
+        command=lambda: play_song(pse_ply, "C:\\Users\\vincent.johnson\\Downloads\\Computer-Science-Final\\Audio\\alarm.wav"),
+        font=attention,
+    )
     pse_ply.grid(row=1, column=1, padx=10, pady=10)
 
-    ff = tk.Button(ply_sng, text="⏭", command=lambda: play_song(pse_ply), font=attention)
+    volume_label = ttk.Label(ply_sng, text="Volume: 50%", font=("Helvetica", 14))
+    volume_label.grid(row=2, column=1, padx=10, pady=5)  # Centered in column 1
+
+    volume_slider = ttk.Scale(
+        ply_sng,
+        from_=0,
+        to=100,
+        orient="horizontal",
+        length=200,
+        command=lambda value: set_volume(volume_slider, volume_label),
+    )
+    volume_slider.set(50)
+    volume_slider.grid(row=3, column=1, padx=10, pady=5)
+
+    speed_label = ttk.Label(ply_sng, text="Speed: 1x", font=("Helvetica", 14))
+    speed_label.grid(row=4, column=1, padx=10, pady=5)  # Centered in column 1
+
+    speed_slider = ttk.Scale(
+        ply_sng,
+        from_=0.5,
+        to=2,
+        orient="horizontal",
+        length=200,
+        command=lambda value: change_speed(speed_slider, speed_label),
+    )
+    speed_slider.set(1)
+    speed_slider.grid(row=5, column=1, padx=10, pady=5)  # Centered in column 1
 
     # Function to clear all widgets from a frame
     def clear_frame(frame):
@@ -61,11 +89,12 @@ def main(repeat):
         if selected_tab == "Menu":
             if not menu.winfo_children():  # Only repopulate if the frame is empty
                 populate_menu()
+        elif selected_tab == "Music Player":
+            root.geometry("300x300")
 
     # Bind the tab change event
     notebook.bind("<<NotebookTabChanged>>", on_tab_changed)
 
-    # Add a button to clear the "menu" frame
     root.geometry("300x200")
     root.mainloop()
 
