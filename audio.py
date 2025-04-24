@@ -29,11 +29,16 @@ def stop_song(pse_ply):
 def set_volume(volume_slider, volume_label):
     volume = volume_slider.get() # Vincent make this work pls
     pygame.mixer.music.set_volume(volume)
-    volume_label.config(text=f"Volume: {int(volume * 100)}%")
+    volume_label.config(text=f"Volume: {int(volume * 100)}%")  # Idk how to do this UI do it pls
     print(f"Volume set to {int(volume * 100)}%")
 
 def change_speed(speed_slider, speed_label):
     speed = speed_slider.get() # Vincent make this work pls
     pygame.mixer.music.set_speed(speed)
-    speed_label.config(text=f"Speed: {speed}")
+    speed_label.config(text=f"Speed: {speed}") # Idk how to do this UI do it pls
     print(f"Song speed changed to {speed}")
+
+def queue_song(file_path):
+    pygame.mixer.music.queue(file_path)
+    # Add UI here
+    print(f"Queued song: {file_path}")
