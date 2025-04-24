@@ -1,7 +1,7 @@
 name,path,playlists
-alarm,Audio/alarm.mp3,['all songs']
-name1,Audio/Desmeon - Hellcat ｜ Drumstep ｜ NCS - Copyright Free Music.mp3,['all songs']
-name2,Audio/Disfigure - Blank ｜ Melodic Dubstep ｜ NCS - Copyright Free Music.mp3,['all songs']
-name3,Audio/Egzod - Rise Up (ft. Veronica Bravo & M.I.M.E) ｜ Trap ｜ NCS - Copyright Free Music [aifDMH1p3zw].mp3,['all songs']
-name4,Audio/Elektronomia - Summersong 2018 ｜ Progressive House ｜ NCS - Copyright Free Music.mp3,['all songs']
-name5,Audio/normal sound effect.mp3,['all songs']
+alarm,Audio/alarm.wav,['all songs']
+Desmeon,Audio/Desmeon - Hellcat ｜ Drumstep ｜ NCS - Copyright Free Music.wav,['all songs']
+Disfigure,Audio/Disfigure - Blank ｜ Melodic Dubstep ｜ NCS - Copyright Free Music.wav,['all songs']
+Egzod,Audio/Egzod - Rise Up (ft. Veronica Bravo & M.I.M.E) ｜ Trap ｜ NCS - Copyright Free Music [aifDMH1p3zw].wav,['all songs']
+Elektronomia,Audio/Elektronomia - Summersong 2018 ｜ Progressive House ｜ NCS - Copyright Free Music.wav,['all songs']
+Normal Sound Effect,Audio/normal sound effect.wav,['all songs']
