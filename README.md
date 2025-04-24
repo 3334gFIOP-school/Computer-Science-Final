@@ -26,13 +26,13 @@ Paragraph describing how to use the project.
 `pip install pydub`  
 
 + Pygame  
-`pip install Pygame`
+`pip install pygame`
 
 ## Current Features  
 ---
 + First feature I am proud of  
-+ Second feature I am pround of  
-+ Third feature I am pround of  
++ Second feature I am proud of  
++ Third feature I am proud of  
 
 ## Contributions  
 ---
