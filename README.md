@@ -19,13 +19,13 @@ Paragraph describing how to use the project.
 + Tkinter  
 `No install`  
 
-+ Pandas 
++ Pandas  
 `pip install pandas`  
 
-+ Pydub
++ Pydub  
 `pip install pydub`  
 
-+ Pygame
++ Pygame  
 `pip install Pygame`
 
 ## Current Features  
@@ -54,7 +54,7 @@ Jackson:
 
 Alec:
 
-Sawyer:
+Sawyer:  
 I am a computer science student and I work on python projects. yay.
 
 Vincent:
