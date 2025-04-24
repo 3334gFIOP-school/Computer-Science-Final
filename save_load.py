@@ -72,3 +72,18 @@ def playlists_to_songs(playlists):
 
     return songs
 
+
+
+#functoin to load the code to the csv and format it as playlists
+def load_to_playlists(csv):
+    songs = load(csv)
+    songs = songs_to_playlists(songs)
+
+    return songs
+
+
+
+#functoin to convert the code as songs and save it
+def songs_to_save(songs, csv):
+    songs = playlists_to_songs(songs)
+    save(songs, csv)
