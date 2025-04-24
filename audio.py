@@ -19,4 +19,3 @@ def play_song(pse_ply, file_path):
     else:
         pse_ply.config(text="▶", font=("Helvetica", 20, "bold"))  
         pygame.mixer.music.pause()
-

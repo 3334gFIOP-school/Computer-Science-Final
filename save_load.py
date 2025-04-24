@@ -5,10 +5,10 @@
 import pandas as pd
 
 
-#functoin to save the CSV to a dictoinary
-def save(csv):
+#functoin to load the CSV to a dictoinary
+def load(csv):
     songs = pd.read_csv(csv).to_dict()
-    #make playlist list strings into lists
+    #make playlist list string into a list of lists
     for ind in range(len(songs['playlists'])):
         songs['playlists'][ind] = eval(songs['playlists'][ind])
 
@@ -16,8 +16,9 @@ def save(csv):
     return songs
 
 
-#functoin to load the dictoinary to the CSV
-def load(songs, csv):
+#functoin to save the dictoinary to the CSV
+def save(songs, csv):
+
     pd.DataFrame(songs).to_csv(csv, index=False)
 
 
@@ -68,10 +69,3 @@ def playlists_to_songs(playlists):
     return songs
 
 
-
-songs = save('songs.csv')
-print(songs)
-songs = songs_to_playlists(songs)
-print(songs)
-songs = playlists_to_songs(songs)
-print(songs)
