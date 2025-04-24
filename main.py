@@ -38,11 +38,11 @@ def main(repeat):
 
     attention = ("Helvetica", 20, "bold")
     # Add some widgets to the "ply_sng" frame
-    tk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10, columnspan=3)
+    ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10, columnspan=3)
     pse_ply = tk.Button(
         ply_sng,
         text="▶",
-        command=lambda: play_song(pse_ply, "C:\\Users\\vincent.johnson\\Downloads\\Computer-Science-Final\\Audio\\alarm.wav"),
+        command=lambda: play_song(pse_ply, ""),
         font=attention,
     )
     pse_ply.grid(row=1, column=1, padx=10, pady=10)
