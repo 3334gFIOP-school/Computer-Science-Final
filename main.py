@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from audio import play_song, fast_forward, rewind
+from audio import play_song, fast_forward #, rewind
 
 def main(repeat):
     root = tk.Tk()
