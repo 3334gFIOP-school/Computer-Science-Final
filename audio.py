@@ -42,3 +42,8 @@ def queue_song(file_path):
     pygame.mixer.music.queue(file_path)
     # Add UI here
     print(f"Queued song: {file_path}")
+
+def skip_song(pse_ply,file_path):
+    pygame.mixer.music.stop()
+    play_song(pse_ply,file_path)
+    print("Skipped song")
