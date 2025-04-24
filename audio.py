@@ -17,10 +17,6 @@ def play_song(pse_ply, file_path):
         except pygame.error as e:
             print(f"Error playing song: {e}")
     else:
-        # Use a consistent font size for "Play"
         pse_ply.config(text="▶", font=("Helvetica", 20, "bold"))  
         pygame.mixer.music.pause()
 
-# Keep the program running so you can hear it
-while pygame.mixer.music.get_busy():
-    continue
