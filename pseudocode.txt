@@ -88,10 +88,16 @@ FUNCtOIN to make playlists dictoinary into one dictoinary
 
             
 ========================== VINCENT ===========================
-Display things using tkinter, anytime someone says print, it's being displayed on a tkinter window.
-Using TABS, gunna be so much fun. ;)
+Have 3 menus, one for playlist editing, a main menu, and a music player menu. Each one has appropriate UI for that section.
 
-MAIN FUNCTION
+- Music playing
+Play and pause, fast forward and rewind, skip song and choose a playlist to play music from (shuffle option too).
+
+- Playlist editing
+Allow them to remove playlists, remove songs from the playlist, add songs to a playlist, create a playlist.
+
+- Main menu
+Just show a welcome screen.
 
 
 ========================== SAWYER ===========================
