@@ -33,12 +33,14 @@ def songs_to_playlists(songs):
         for playlist in playlists:
             #add the song to the playlist if the playlist is already there
             if playlist in playlist_dictoinary.keys():
-                playlist_dictoinary[playlist].append(songs['song'][ind])
+                playlist_dictoinary[playlist].append([songs['name'][ind],songs['path'][ind]])
 
             #add the playlist to the dicoinary and add the song to it if the playlist wasn't already there
             else:
                 playlist_dictoinary[playlist] = []
-                playlist_dictoinary[playlist].append(songs['song'][ind])
+                playlist_dictoinary[playlist].append([songs['name'][ind],songs['path'][ind]])
+
+            #when adding songs, it will add as a list: index 0 is song name, index 1 is song path
 
 
     return playlist_dictoinary
@@ -48,24 +50,25 @@ def songs_to_playlists(songs):
 def playlists_to_songs(playlists):
 
     songs = {
-        'song': {},
+        'name': {},
+        'path': {},
         'playlists': {}
     }
 
     #add songs
     for ind, playlist_list in enumerate(playlists.values()):
         for i, song in enumerate(playlist_list):
-            if song not in songs['song'].values():
-                songs['song'][i+ind] = song
+            if song[0] not in songs['path'].values():
+                songs['path'][i+ind] = song[1]
+                songs['name'][i+ind] = song[0]
                 songs['playlists'][i+ind] = []
 
     #add playlists
     for playlist in playlists:
         for song in playlists[playlist]:
-            for ind in songs['song']:
-                if songs['song'][ind] == song:
+            for ind in songs['path']:
+                if songs['path'][ind] == song[1]:
                     songs['playlists'][ind].append(playlist)
 
     return songs
-
 
