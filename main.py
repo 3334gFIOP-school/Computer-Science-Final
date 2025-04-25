@@ -1,3 +1,5 @@
+# Main file, mostly vincent ngl
+
 import tkinter as tk
 from tkinter import ttk
 from audio import play_song, change_speed, set_volume
@@ -42,7 +44,7 @@ def main(repeat):
     pse_ply = tk.Button(
         ply_sng,
         text="▶",
-        command=lambda: play_song(pse_ply, ""),
+        command=lambda: play_song(pse_ply, "Computer-Science-Final/Audio/normal sound effect.wav"),
         font=attention,
     )
     pse_ply.grid(row=1, column=1, padx=10, pady=10)
@@ -66,8 +68,8 @@ def main(repeat):
 
     speed_slider = ttk.Scale(
         ply_sng,
-        from_=0.5,
-        to=2,
+        from_=0.50,
+        to=2.00,
         orient="horizontal",
         length=200,
         command=lambda value: change_speed(speed_slider, speed_label),
