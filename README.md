@@ -26,7 +26,13 @@ Paragraph describing how to use the project.
 `pip install pydub`  
 
 + Pygame  
-`pip install pygame`
+`pip install pygame`  
+
++ Sounddevice  
+`pip install sounddevice`  
+
++ Scipy  
+`pip install scipy` 
 
 ## Current Features  
 ---
