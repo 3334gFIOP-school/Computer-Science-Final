@@ -31,6 +31,9 @@ Paragraph describing how to use the project.
 + Sounddevice  
 `pip install sounddevice`  
 
++ Scipy  
+`pip install scipy` 
+
 ## Current Features  
 ---
 + First feature I am proud of  
