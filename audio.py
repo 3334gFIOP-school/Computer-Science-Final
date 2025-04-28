@@ -13,7 +13,6 @@ audio_data = None
 sample_rate = None
 playback_thread = None
 
-global playback_position
 playback_position = 0  # global playback position
 
 def play_song(pse_ply, file_path):
@@ -34,18 +33,21 @@ def play_song(pse_ply, file_path):
                 raise sd.CallbackStop()
 
             step = int(current_speed)
+            playback_position = 0
             end_pos = playback_position + frames * step
 
             if end_pos >= len(audio_data):
                 outdata[:len(audio_data[playback_position::step])] = audio_data[playback_position::step][:frames]
                 outdata[len(audio_data[playback_position::step][:frames]):] = 0
-                raise sd.CallbackStop()
             else:
                 outdata[:] = audio_data[playback_position:end_pos:step][:frames]
                 playback_position += frames * step
 
         def playback_thread_func():
-            channels = 2 if audio_data.ndim > 1 else 1
+            if audio_data.ndim > 1:
+                channels = 2
+            else:
+                channels = 1
             with sd.OutputStream(samplerate=sample_rate, channels=channels, callback=audio_callback):
                 sd.sleep(int(len(audio_data) / sample_rate * 1000))  # Approximate wait
 
@@ -79,14 +81,12 @@ def set_volume(volume_slider, volume_label):
     volume_label.config(text=f"Volume: {int(volume * 100)}%") # VINCENT =================================================
     print(f"Volume set to {int(volume * 100)}%")
 
-
 def change_speed(speed_slider, speed_label):
     global current_speed
     current_speed = round(speed_slider.get(), 1)  # Get the speed value from the slider
     speed_label.config(text=f"Speed: {current_speed}x") # VINCENT =================================================
     print(f"Playback speed changed to {current_speed}x")
-
-
+    
 def create_replay_button(root, play_button, file_path): # VINCENT =================================================
     def replay_song():
         stop_song()

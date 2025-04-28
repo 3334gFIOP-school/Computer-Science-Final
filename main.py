@@ -101,7 +101,7 @@ def main(repeat):
     pse_ply = tk.Button(
         ply_sng,
         text="▶",
-        command=lambda: play_song(pse_ply, "Computer-Science-Final/Audio/normal sound effect.wav"),
+        command=lambda: play_song(pse_ply, "Audio/normal sound effect.wav"),
         font=attention,
     )
     pse_ply.grid(row=1, column=1, padx=10, pady=10)
