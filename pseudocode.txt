@@ -94,7 +94,7 @@ Have 3 menus, one for playlist editing, a main menu, and a music player menu. Ea
 Play and pause, fast forward and rewind, skip song and choose a playlist to play music from (shuffle option too).
 
 - Playlist editing
-Allow them to remove playlists, remove songs from the playlist, add songs to a playlist, create a playlist.
+Allow them to remove playlists, remove songs from the playlist, add songs to a playlist, create a playlist, and just show the songs in the playlist.
 
 - Main menu
 Just show a welcome screen.
