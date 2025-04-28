@@ -13,7 +13,6 @@ audio_data = None
 sample_rate = None
 playback_thread = None
 
-global playback_position
 playback_position = 0  # global playback position
 
 def play_song(pse_ply, file_path):
@@ -34,12 +33,12 @@ def play_song(pse_ply, file_path):
                 raise sd.CallbackStop()
 
             step = int(current_speed)
+            playback_position = 0
             end_pos = playback_position + frames * step
 
             if end_pos >= len(audio_data):
                 outdata[:len(audio_data[playback_position::step])] = audio_data[playback_position::step][:frames]
                 outdata[len(audio_data[playback_position::step][:frames]):] = 0
-                raise sd.CallbackStop()
             else:
                 outdata[:] = audio_data[playback_position:end_pos:step][:frames]
                 playback_position += frames * step
@@ -51,6 +50,7 @@ def play_song(pse_ply, file_path):
 
         playback_thread = threading.Thread(target=playback_thread_func)
         playback_thread.start()
+        input('Press enter to continue')
 
         if pse_ply["text"] == "▶":
             pse_ply.config(text="⏸", font=("Helvetica", 20, "bold"))
@@ -85,8 +85,7 @@ def change_speed(speed_slider, speed_label):
     current_speed = round(speed_slider.get(), 1)  # Get the speed value from the slider
     speed_label.config(text=f"Speed: {current_speed}x") # VINCENT =================================================
     print(f"Playback speed changed to {current_speed}x")
-
-
+    
 def create_replay_button(root, play_button, file_path): # VINCENT =================================================
     def replay_song():
         stop_song()
