@@ -13,51 +13,50 @@ audio_data = None
 sample_rate = None
 playback_thread = None
 
+global playback_position
+playback_position = 0  # global playback position
 
 def play_song(pse_ply, file_path):
-    global is_playing, current_speed, audio_data, sample_rate, playback_thread
+    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position
     try:
-        # Load the audio file
         sample_rate, audio_data = read(file_path)
         if audio_data.ndim > 1:
-            print("Stereo audio detected. Configuring for stereo playback.")
+            print("Stereo audio detected.")
         else:
             print("Mono audio detected.")
 
-        audio_data = audio_data / np.max(np.abs(audio_data))  # Normalize audio data
-        print(f"Loaded audio: {file_path}, Sample Rate: {sample_rate}, Length: {len(audio_data)} samples")
+        audio_data = audio_data / np.max(np.abs(audio_data))  # Normalize
+        print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
         is_playing = True
+        playback_position = 0  # reset position on new play
         def audio_callback(outdata, frames, time, status):
-            global is_playing, current_speed, audio_data
             if not is_playing:
                 raise sd.CallbackStop()
-            indices = np.arange(0, len(audio_data), current_speed) # Number of samples based on speed
-            indices = indices[:frames]  # Limit to the number of frames requested
-            indices = indices.astype(int)
-            if len(indices) < frames:
-                outdata[:len(indices)] = audio_data[indices]
-                outdata[len(indices):] = 0  # Fill the rest with silence so it doesnt take up file space
-                raise sd.CallbackStop()  # Stop playback when data is exhausted
-            else:
-                outdata[:] = audio_data[indices]
 
-        # Start playback in a separate thread
+            step = int(current_speed)
+            end_pos = playback_position + frames * step
+
+            if end_pos >= len(audio_data):
+                outdata[:len(audio_data[playback_position::step])] = audio_data[playback_position::step][:frames]
+                outdata[len(audio_data[playback_position::step][:frames]):] = 0
+                raise sd.CallbackStop()
+            else:
+                outdata[:] = audio_data[playback_position:end_pos:step][:frames]
+                playback_position += frames * step
+
         def playback_thread_func():
-            channels = 2 if audio_data.ndim > 1 else 1  # Set channels based on audio data
+            channels = 2 if audio_data.ndim > 1 else 1
             with sd.OutputStream(samplerate=sample_rate, channels=channels, callback=audio_callback):
-                sd.sleep(int(len(audio_data) / sample_rate * 1000))  # Wait for playback to finish
+                sd.sleep(int(len(audio_data) / sample_rate * 1000))  # Approximate wait
 
         playback_thread = threading.Thread(target=playback_thread_func)
         playback_thread.start()
 
-        # Update the play/pause button
-        current_text = pse_ply["text"]
-        if current_text == "▶":
-            pse_ply.config(text="⏸", font=("Helvetica", 20, "bold")) # VINCENT =================================================
+        if pse_ply["text"] == "▶":
+            pse_ply.config(text="⏸", font=("Helvetica", 20, "bold"))
             print("Playing song")
         else:
-            pse_ply.config(text="▶", font=("Helvetica", 20, "bold")) # VINCENT =================================================
-        
+            pse_ply.config(text="▶", font=("Helvetica", 20, "bold"))
             stop_song()
 
     except Exception as e:
