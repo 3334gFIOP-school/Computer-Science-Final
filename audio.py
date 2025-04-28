@@ -44,13 +44,15 @@ def play_song(pse_ply, file_path):
                 playback_position += frames * step
 
         def playback_thread_func():
-            channels = 2 if audio_data.ndim > 1 else 1
+            if audio_data.ndim > 1:
+                channels = 2
+            else:
+                channels = 1
             with sd.OutputStream(samplerate=sample_rate, channels=channels, callback=audio_callback):
                 sd.sleep(int(len(audio_data) / sample_rate * 1000))  # Approximate wait
 
         playback_thread = threading.Thread(target=playback_thread_func)
         playback_thread.start()
-        input('Press enter to continue')
 
         if pse_ply["text"] == "▶":
             pse_ply.config(text="⏸", font=("Helvetica", 20, "bold"))
@@ -78,7 +80,6 @@ def set_volume(volume_slider, volume_label):
         audio_data = audio_data * volume  # Adjust volume
     volume_label.config(text=f"Volume: {int(volume * 100)}%") # VINCENT =================================================
     print(f"Volume set to {int(volume * 100)}%")
-
 
 def change_speed(speed_slider, speed_label):
     global current_speed
