@@ -91,7 +91,7 @@ def main(repeat):
 
     # Function to populate the "menu" frame
     def populate_menu():
-        ttk.Label(menu, text="Welcome to Musi   c Player!\nSelect a tab to continue").pack(pady=5)
+        ttk.Label(menu, text="Welcome to Music Player!\nSelect a tab to continue").pack(pady=5)
 
     # Populate the "menu" frame initially
     populate_menu()
