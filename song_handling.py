@@ -12,8 +12,9 @@ def song_exists(playlist, song_name):
 
 # Add a song to a playlist
 def add_song(playlists):
+
     # Prompt user for playlist name and check if it exists
-    playlist = song_exists(playlists, input("Enter the name of the playlist: "))
+    playlist = song_exists(playlists, input("Enter the name of the playlist: ")) # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     if playlist == False:
         print("Playlist does not exist")
@@ -21,8 +22,8 @@ def add_song(playlists):
         return playlists
 
     # Prompt user for song details
-    filepath = input("Enter the file path of the song to add: ")
-    name = input("Enter the name of the song: ")
+    filepath = input("Enter the file path of the song to add: ") # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    name = input("Enter the name of the song: ") # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # Check if the song already exists in the playlist
     for song in playlists[playlist]:
@@ -38,7 +39,7 @@ def add_song(playlists):
 # Remove a song from a playlist
 def remove_song(playlists):
     # Prompt user for playlist name and check if it exists
-    playlist = song_exists(playlists, input("Enter the name of the playlist: "))
+    playlist = song_exists(playlists, input("Enter the name of the playlist: ")) # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     if playlist == False:
         print("Playlist does not exist")
@@ -46,7 +47,7 @@ def remove_song(playlists):
         return playlists
 
     # Prompt user for the song name
-    name = input("Enter the name of the song: ")
+    name = input("Enter the name of the song: ") # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # Check if the song exists in the playlist and remove it
     for song in playlists[playlist]:
@@ -61,7 +62,7 @@ def remove_song(playlists):
 # Add a new playlist
 def add_playlist(playlists):
     # Prompt user for the playlist name
-    playlist_name = input("Enter the name of the playlist: ")
+    playlist_name = input("Enter the name of the playlist: ") # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # Check if the playlist already exists
     if playlist_name in playlists.keys():
@@ -82,7 +83,7 @@ def add_playlist(playlists):
 # Remove an existing playlist
 def remove_playlist(playlists):
     # Prompt user for the playlist name
-    playlist_name = input("Enter the name of the playlist: ")
+    playlist_name = input("Enter the name of the playlist: ") # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # Check if the playlist exists and remove it
     if playlist_name in playlists.keys():
