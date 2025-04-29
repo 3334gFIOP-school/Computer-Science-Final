@@ -2,7 +2,7 @@
 
 ## Project Description  
 ---
-This is our final team project for Computer Science 2!  
+This is our final team project for Computer Science 2! It plays songs.  
 
 ## Installation  
 ---
