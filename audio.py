@@ -110,3 +110,10 @@ def create_replay_button(root, play_button, file_path): # Replay button
     replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
     replay_button.pack()
 
+def get_song_length(): # Gets the song length in seconds
+    """Returns the length of the song in seconds."""
+    if audio_data is not None and sample_rate is not None:
+        length_in_seconds = len(audio_data) / sample_rate # Gets the song length seconds
+        return length_in_seconds
+    else:
+        return 0  # Return 0 if audio data or sample rate is not available
