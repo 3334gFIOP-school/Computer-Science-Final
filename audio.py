@@ -14,6 +14,7 @@ sample_rate = None
 playback_thread = None
 playback_position = 0
 volume = 1.0  # Default volume 100%
+step = 1
 
 def play_song(play_button, file_path):
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
@@ -24,39 +25,65 @@ def play_song(play_button, file_path):
             print("Stereo audio detected.")
         else:
             print("Mono audio detected.")
-        
+
         data = data / np.max(np.abs(data))  # Normalize
         audio_data = data
         print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
 
         def audio_callback(outdata, frames, time, status):
             global playback_position, is_playing
+
+            # Stop the callback if playback is not active
             if not is_playing:
                 raise sd.CallbackStop()
 
-            step = int(current_speed)
-            end_pos = playback_position + frames * step
+            # Determine the number of audio channels (mono or stereo)
+            channels = 2 if audio_data.ndim > 1 else 1
 
-            if end_pos >= len(audio_data):
-                available = (len(audio_data) - playback_position) // step
-                outdata[:available] = (audio_data[playback_position::step][:available]) * volume
-                outdata[available:] = 0
-                is_playing = False  # Stop after end
-                return 
-            else:
-                outdata[:] = (audio_data[playback_position:end_pos:step][:frames]) * volume
-                playback_position += frames * step
+            # Create an empty output buffer: shape (frames, channels) for stereo, or (frames,) for mono
+            output = np.zeros((frames, channels) if channels > 1 else (frames,), dtype=np.float32)
+
+            # Generate each output sample using interpolation
+            for i in range(frames):
+                pos = int(playback_position)                        # Integer part of the current position
+                next_pos = min(pos + 1, len(audio_data) - 1)        # Next sample for interpolation (clamped to avoid overflow)
+                fraction = playback_position - pos                  # Fractional part between samples
+
+                # Stop playback if we've reached the end of the audio
+                if pos >= len(audio_data):
+                    is_playing = False
+                    break
+
+                # Linear interpolation between current and next samples
+                if channels == 1:
+                    # Mono: interpolate single channel
+                    sample = (1 - fraction) * audio_data[pos] + fraction * audio_data[next_pos]
+                    output[i] = sample * volume
+                else:
+                    # Stereo: interpolate both channels
+                    sample = (1 - fraction) * audio_data[pos, :] + fraction * audio_data[next_pos, :]
+                    output[i, :] = sample * volume
+
+                # Advance playback position by current speed (can be fractional)
+                playback_position += current_speed
+
+            # Write the generated samples to the output buffer
+            outdata[:len(output)] = output
+
+            # Fill any remaining buffer space with silence (if playback ended early)
+            if len(output) < frames:
+                outdata[len(output):] = 0
 
         def playback_thread_func():
             global is_playing
             channels = 2 if audio_data.ndim > 1 else 1
-            with sd.OutputStream(samplerate=sample_rate, channels=channels, callback=audio_callback):
+            with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=audio_callback):
                 while is_playing:
                     sd.sleep(100)
 
         if play_button["text"] == "▶":
             is_playing = True
-            playback_position = 0
+            playback_position = 0.0  # Use float for fractional stepping
             playback_thread = threading.Thread(target=playback_thread_func)
             playback_thread.start()
             play_button.config(text="⏸", font=("Helvetica", 20, "bold"))
@@ -95,3 +122,4 @@ def create_replay_button(root, play_button, file_path):
         play_song(play_button, file_path)
     replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
     replay_button.pack()
+
