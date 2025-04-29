@@ -47,7 +47,7 @@ def main(repeat):
                     self.listbox.selection_set(index)
 
         def print_selected_items(self):
-            # Print selected items in the terminal
+            # Print items in the terminal
             selected_indices = self.listbox.curselection()
             selected = [self.listbox.get(i) for i in selected_indices]
             export = [str(self.nme), selected] #['Playlist name', ['song1','song2'...]]
@@ -126,8 +126,8 @@ def main(repeat):
 
     speed_slider = ttk.Scale(
         ply_sng,
-        from_=0.50,
-        to=2.00,
+        from_=0.10,
+        to=5.00,
         orient="horizontal",
         length=200,
         command=lambda value: change_speed(speed_slider, speed_label),
