@@ -18,7 +18,6 @@ step = 1 # This fixes the broken 0.5x speed, DO NOT TOUCH
 
 def play_song(play_button, file_path):  # Play or pause the song
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
-
     try:
         if audio_data is None or sample_rate is None:
             sample_rate, data = read(file_path)
@@ -86,8 +85,14 @@ def play_song(play_button, file_path):  # Play or pause the song
 
 
 def stop_song(): # Stops the song
-    global is_playing
+    global is_playing,current_speed, audio_data, sample_rate, playback_thread, playback_position,volume
     is_playing = False
+    current_speed = 1.0
+    audio_data = None
+    sample_rate = None
+    playback_thread = None
+    playback_position = 0
+    volume = 1.0  # Default volume 100%
     print("Stopped song")
 
 def set_volume(volume_slider, volume_label): # Sets the volume
