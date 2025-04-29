@@ -16,6 +16,7 @@ def main(repeat):
             super().__init__(master, **kwargs)
             self.options = options
             self.nme = nme
+            print(f"Playlist name: {self.nme}")  # Debugging: Print the playlist name
 
             # Frame for the Listbox and Scrollbar
             self.listbox_frame = tk.Frame(self)
@@ -54,12 +55,12 @@ def main(repeat):
             try:
                 # Export ans save here
                 pass
-                tk.MessageBox(self, title="Export", message=f"Successfully saved {self.nme} playlist")
+                messagebox.showerror(title="Export", message=f"Saved {self.nme} playlist")
                 clear_frame(plylst)
                 pop_plylst()
                 
             except Exception as e:
-                tk.MessageBox(self, title="Export", message=f"Failed to save {self.nme} playlist")
+                messagebox.showerror(title="Export", message=f"Failed to save {self.nme} playlist")
 
         def clear_selection(self):
             # Clear all selections in the Listbox
@@ -265,18 +266,18 @@ def main(repeat):
         background="#4caf50",   # Color of the slider
     )
 
-    def create_plylst():
+    def create_plylst(root):
         clear_frame(plylst)
         nme = tk.StringVar()
 
         def slct_sngs():
-            nme.get() #?????????????????
+            print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
-
+            root.geometry("400x400")
             options = [] #Figure out how to integrate this later ===========================================================
 
             # Create and pack the MultiSelectListbox
-            listbox = MultiSelectListbox(plylst, options, nme)
+            listbox = MultiSelectListbox(plylst, options, nme.get())
             listbox.pack(padx=10, pady=10, fill='both', expand=True)
 
             # Add a button to clear selected items
@@ -299,10 +300,11 @@ def main(repeat):
 
         root.geometry("400x400")
 
-        def edit_sngs():
+        def edit_sngs(option):
             nme = lstbox.curselection()
             clear_frame(plylst)
             #root.geometry("400x150")
+            nme = option[nme[0]]
 
             options = ["song1", "song2", "song3"] #Figure out how to integrate this later ===========================================================
             preselected_indices = [0, 2]  # Integrate this with everything else ###################################################################################
@@ -322,7 +324,7 @@ def main(repeat):
 
             # The rest of this is someone else's ############################################################################################
 
-        options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        option = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -340,10 +342,10 @@ def main(repeat):
         scrollbar.config(command=lstbox.yview)
 
         # Populate the Listbox with options
-        for option in options:
-            lstbox.insert(tk.END, option)
+        for optio in option:
+            lstbox.insert(tk.END, optio)
 
-        ttk.Button(plylst, text="Pick playlist", command=edit_sngs).pack()
+        ttk.Button(plylst, text="Pick playlist", command=lambda: edit_sngs(option)).pack()
 
     def delt(root):
         clear_frame(plylst)
@@ -439,7 +441,7 @@ def main(repeat):
 
     def pop_plylst():
         ttk.Label(plylst, text="Please select an option:").grid(column = 1, row = 0, padx = 10, pady = 10)
-        ttk.Button(plylst, text="Create a playlist", command=create_plylst).grid(column = 0, row=1, padx=5, pady=5)
+        ttk.Button(plylst, text="Create a playlist", command=lambda: create_plylst(root)).grid(column = 0, row=1, padx=5, pady=5)
         ttk.Button(plylst, text="Edit songs in playlist", command=lambda: edt_plylst(root)).grid(column=1, row=1, padx=5, pady=5)
         ttk.Button(plylst, text="Delete playlist", command=lambda: delt(root)).grid(column=2, row=1, padx=5, pady=5)
         ttk.Button(plylst, text="Show songs in playlist", command=lambda: show_plylst(root)).grid(column=1, row=2, padx=5, pady=5)
