@@ -14,23 +14,23 @@ sample_rate = None
 playback_thread = None
 playback_position = 0
 volume = 1.0  # Default volume 100%
-step = 1
+step = 1 # This fixes the broken 0.5x speed, DO NOT TOUCH
 
-def play_song(play_button, file_path):
+def play_song(play_button, file_path): # Play the song
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
 
     try:
         sample_rate, data = read(file_path)
         if data.ndim > 1:
-            print("Stereo audio detected.")
+            print("Stereo audio detected.") # Stereo audio has 2 channels and both need to be modified for volume and speed
         else:
-            print("Mono audio detected.")
+            print("Mono audio detected.") # Stereo audio has 1 channel
 
         data = data / np.max(np.abs(data))  # Normalize
         audio_data = data
         print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
 
-        def audio_callback(outdata, frames, time, status):
+        def audio_callback(outdata, frames, time, status): # Callback function for audio playback
             global playback_position, is_playing
 
             # Stop the callback if playback is not active
@@ -84,38 +84,38 @@ def play_song(play_button, file_path):
         if play_button["text"] == "▶":
             is_playing = True
             playback_position = 0.0  # Use float for fractional stepping
-            playback_thread = threading.Thread(target=playback_thread_func)
+            playback_thread = threading.Thread(target=playback_thread_func) # This lets it be paused in the middle
             playback_thread.start()
             play_button.config(text="⏸", font=("Helvetica", 20, "bold"))
             print("Playing song")
         else:
             stop_song()
-            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+            play_button.config(text="▶", font=("Helvetica", 20, "bold")) # Changing the play button
 
         if not is_playing:
-            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+            play_button.config(text="▶", font=("Helvetica", 20, "bold")) # Changing the play button
 
-    except Exception as e:
-        print(f"Error playing song: {e}")
+    except Exception as err:
+        print(f"Error playing song: {err}") # Error handling
 
-def stop_song():
+def stop_song(): # Stops the song
     global is_playing
     is_playing = False
     print("Stopped song")
 
-def set_volume(volume_slider, volume_label):
+def set_volume(volume_slider, volume_label): # Sets the volume
     global volume
     volume = round((volume_slider.get() / 100), 2)
     volume_label.config(text=f"Volume: {int(volume * 100)}%")
     print(f"Volume set to {int(volume * 100)}%")
 
-def change_speed(speed_slider, speed_label):
+def change_speed(speed_slider, speed_label): # Changes the speed
     global current_speed
     current_speed = round(speed_slider.get(), 1)
     speed_label.config(text=f"Speed: {current_speed}x")
     print(f"Playback speed changed to {current_speed}x")
 
-def create_replay_button(root, play_button, file_path):
+def create_replay_button(root, play_button, file_path): # Replay button
     def replay_song():
         stop_song()
         play_button.config(text="▶", font=("Helvetica", 20, "bold"))
