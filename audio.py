@@ -16,61 +16,49 @@ playback_position = 0
 volume = 1.0  # Default volume 100%
 step = 1 # This fixes the broken 0.5x speed, DO NOT TOUCH
 
-def play_song(play_button, file_path): # Play the song
+def play_song(play_button, file_path):  # Play or pause the song
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
 
     try:
-        sample_rate, data = read(file_path)
-        if data.ndim > 1:
-            print("Stereo audio detected.") # Stereo audio has 2 channels and both need to be modified for volume and speed
-        else:
-            print("Mono audio detected.") # Stereo audio has 1 channel
+        if audio_data is None or sample_rate is None:
+            sample_rate, data = read(file_path)
+            if data.ndim > 1:
+                print("Stereo audio detected.")  # Stereo: 2 channels
+            else:
+                print("Mono audio detected.")  # Mono: 1 channel
 
-        data = data / np.max(np.abs(data))  # Normalize
-        audio_data = data
-        print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
+            data = data / np.max(np.abs(data))  # Normalize
+            audio_data = data
+            print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
 
-        def audio_callback(outdata, frames, time, status): # Callback function for audio playback
+        def audio_callback(outdata, frames, time, status):
             global playback_position, is_playing
 
-            # Stop the callback if playback is not active
             if not is_playing:
                 raise sd.CallbackStop()
 
-            # Determine the number of audio channels (mono or stereo)
             channels = 2 if audio_data.ndim > 1 else 1
-
-            # Create an empty output buffer: shape (frames, channels) for stereo, or (frames,) for mono
             output = np.zeros((frames, channels) if channels > 1 else (frames,), dtype=np.float32)
 
-            # Generate each output sample using interpolation
             for i in range(frames):
-                pos = int(playback_position)                        # Integer part of the current position
-                next_pos = min(pos + 1, len(audio_data) - 1)        # Next sample for interpolation (clamped to avoid overflow)
-                fraction = playback_position - pos                  # Fractional part between samples
+                pos = int(playback_position)
+                next_pos = min(pos + 1, len(audio_data) - 1)
+                fraction = playback_position - pos
 
-                # Stop playback if we've reached the end of the audio
-                if pos >= len(audio_data):
+                if pos >= len(audio_data): # Make sure that it works
                     is_playing = False
                     break
 
-                # Linear interpolation between current and next samples
-                if channels == 1:
-                    # Mono: interpolate single channel
+                if channels == 1: #  Mono audio
                     sample = (1 - fraction) * audio_data[pos] + fraction * audio_data[next_pos]
                     output[i] = sample * volume
                 else:
-                    # Stereo: interpolate both channels
                     sample = (1 - fraction) * audio_data[pos, :] + fraction * audio_data[next_pos, :]
                     output[i, :] = sample * volume
 
-                # Advance playback position by current speed (can be fractional)
                 playback_position += current_speed
 
-            # Write the generated samples to the output buffer
             outdata[:len(output)] = output
-
-            # Fill any remaining buffer space with silence (if playback ended early)
             if len(output) < frames:
                 outdata[len(output):] = 0
 
@@ -83,20 +71,19 @@ def play_song(play_button, file_path): # Play the song
 
         if play_button["text"] == "▶":
             is_playing = True
-            playback_position = 0.0  # Use float for fractional stepping
-            playback_thread = threading.Thread(target=playback_thread_func) # This lets it be paused in the middle
+            # Do not reset playback_position here
+            playback_thread = threading.Thread(target=playback_thread_func)
             playback_thread.start()
             play_button.config(text="⏸", font=("Helvetica", 20, "bold"))
             print("Playing song")
         else:
-            stop_song()
-            play_button.config(text="▶", font=("Helvetica", 20, "bold")) # Changing the play button
-
-        if not is_playing:
-            play_button.config(text="▶", font=("Helvetica", 20, "bold")) # Changing the play button
+            is_playing = False  # Pause only (retain position)
+            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+            print("Paused song")
 
     except Exception as err:
-        print(f"Error playing song: {err}") # Error handling
+        print(f"Error playing song: {err}")
+
 
 def stop_song(): # Stops the song
     global is_playing
