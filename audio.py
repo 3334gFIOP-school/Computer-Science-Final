@@ -14,84 +14,99 @@ sample_rate = None
 playback_thread = None
 playback_position = 0
 volume = 1.0  # Default volume 100%
+step = 1 # This fixes the broken 0.5x speed, DO NOT TOUCH
 
-def play_song(play_button, file_path):
+def play_song(play_button, file_path):  # Play or pause the song
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
 
     try:
-        sample_rate, data = read(file_path)
-        if data.ndim > 1:
-            print("Stereo audio detected.")
-        else:
-            print("Mono audio detected.")
-        
-        data = data / np.max(np.abs(data))  # Normalize
-        audio_data = data
-        print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
+        if audio_data is None or sample_rate is None:
+            sample_rate, data = read(file_path)
+            if data.ndim > 1:
+                print("Stereo audio detected.")  # Stereo: 2 channels
+            else:
+                print("Mono audio detected.")  # Mono: 1 channel
+
+            data = data / np.max(np.abs(data))  # Normalize
+            audio_data = data
+            print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
 
         def audio_callback(outdata, frames, time, status):
             global playback_position, is_playing
+
             if not is_playing:
                 raise sd.CallbackStop()
 
-            step = int(current_speed)
-            end_pos = playback_position + frames * step
+            channels = 2 if audio_data.ndim > 1 else 1
+            output = np.zeros((frames, channels) if channels > 1 else (frames,), dtype=np.float32)
 
-            if end_pos >= len(audio_data):
-                available = (len(audio_data) - playback_position) // step
-                outdata[:available] = (audio_data[playback_position::step][:available]) * volume
-                outdata[available:] = 0
-                is_playing = False  # Stop after end
-                return 
-            else:
-                outdata[:] = (audio_data[playback_position:end_pos:step][:frames]) * volume
-                playback_position += frames * step
+            for i in range(frames):
+                pos = int(playback_position)
+                next_pos = min(pos + 1, len(audio_data) - 1)
+                fraction = playback_position - pos
+
+                if pos >= len(audio_data): # Make sure that it works
+                    is_playing = False
+                    break
+
+                if channels == 1: #  Mono audio
+                    sample = (1 - fraction) * audio_data[pos] + fraction * audio_data[next_pos]
+                    output[i] = sample * volume
+                else:
+                    sample = (1 - fraction) * audio_data[pos, :] + fraction * audio_data[next_pos, :]
+                    output[i, :] = sample * volume
+
+                playback_position += current_speed
+
+            outdata[:len(output)] = output
+            if len(output) < frames:
+                outdata[len(output):] = 0
 
         def playback_thread_func():
             global is_playing
             channels = 2 if audio_data.ndim > 1 else 1
-            with sd.OutputStream(samplerate=sample_rate, channels=channels, callback=audio_callback):
+            with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=audio_callback):
                 while is_playing:
                     sd.sleep(100)
 
         if play_button["text"] == "▶":
             is_playing = True
-            playback_position = 0
+            # Do not reset playback_position here
             playback_thread = threading.Thread(target=playback_thread_func)
             playback_thread.start()
             play_button.config(text="⏸", font=("Helvetica", 20, "bold"))
             print("Playing song")
         else:
-            stop_song()
+            is_playing = False  # Pause only (retain position)
             play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+            print("Paused song")
 
-        if not is_playing:
-            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+    except Exception as err:
+        print(f"Error playing song: {err}")
 
-    except Exception as e:
-        print(f"Error playing song: {e}")
 
-def stop_song():
+def stop_song(): # Stops the song
     global is_playing
     is_playing = False
     print("Stopped song")
 
-def set_volume(volume_slider, volume_label):
+def set_volume(volume_slider, volume_label): # Sets the volume
     global volume
     volume = round((volume_slider.get() / 100), 2)
     volume_label.config(text=f"Volume: {int(volume * 100)}%")
     print(f"Volume set to {int(volume * 100)}%")
 
-def change_speed(speed_slider, speed_label):
+def change_speed(speed_slider, speed_label): # Changes the speed
     global current_speed
     current_speed = round(speed_slider.get(), 1)
     speed_label.config(text=f"Speed: {current_speed}x")
     print(f"Playback speed changed to {current_speed}x")
 
-def create_replay_button(root, play_button, file_path):
+def create_replay_button(root, play_button, file_path): # Replay button
     def replay_song():
         stop_song()
         play_button.config(text="▶", font=("Helvetica", 20, "bold"))
         play_song(play_button, file_path)
     replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
     replay_button.pack()
+
