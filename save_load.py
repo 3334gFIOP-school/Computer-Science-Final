@@ -11,8 +11,6 @@ def load(csv):
     #make playlist list string into a list of lists
     for ind in range(len(songs['playlists'])):
         songs['playlists'][ind] = eval(songs['playlists'][ind])
-
-
     return songs
 
 
