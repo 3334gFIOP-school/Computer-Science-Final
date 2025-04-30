@@ -10,6 +10,7 @@ def main(repeat):
     root = tk.Tk()
     root.title("Main Window")
     is_sliding = False
+    ply = False
     class MultiSelectListbox(tk.Frame):
         def __init__(self, master, options, nme, preselected_indices=None, **kwargs):
             super().__init__(master, **kwargs)
@@ -80,11 +81,8 @@ def main(repeat):
     ply_sng = ttk.Frame(notebook)
     menu = ttk.Frame(notebook)
     plylst = ttk.Frame(notebook)
-    frame4 = ttk.Frame(notebook)
-    test_tab = ttk.Frame(notebook)  # Create a new test tab
 
     notebook.add(menu, text="Menu")
-    notebook.add(test_tab, text="Test Tab")  # Add the test tab to the notebook
     notebook.add(ply_sng, text="Music Player")
     notebook.add(plylst, text="Playlist edit")
     notebook.pack(expand=True, fill="both")
@@ -105,13 +103,13 @@ def main(repeat):
                 widget.destroy()
 
         clear_frame(ply_sng)
-        root.geometry("400x400")
+        root.geometry("")
 
         def pck():
             nme = lstbox.curselection()
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
-            pop_audio(root)
+            pop_audio(root, ply)
         options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
 
         # Scrollbar
@@ -136,8 +134,9 @@ def main(repeat):
         ttk.Button(ply_sng, text="Pick playlist", command=pck).pack()
     pick_plylst(root)
 
-    def pop_audio(root):
-        root.geometry("350x350")
+    def pop_audio(root, ply):
+        ply = True
+        root.geometry("")
         clear_frame(ply_sng)  # Clear the previous content of the audio tab
         attention = ("Helvetica", 20, "bold")
 
@@ -197,7 +196,7 @@ def main(repeat):
         speed_slider.set(1.0)
         speed_slider.grid(row=5, column=1, padx=10, pady=5)
 
-        # Add a dynamic slider to the "Music Player" tab
+                # Add a dynamic slider to the "Music Player" tab
         def add_dynamic_slider_to_music_player(is_sliding):
             # Create a frame to hold the custom slider
             slider_frame = tk.Frame(ply_sng, bg="white")  # White background
@@ -223,27 +222,58 @@ def main(repeat):
                 outline="",
             )
 
+            # State to track the slider's position and whether it's sliding
+            slider_state = {"current_width": 0, "is_sliding": False, "timer": None}
+
             # Function to update the slider position
             def update_slider():
-                if is_sliding["value"]:
-                    current_width = canvas.coords(blue_bar)[2]
-                    if current_width < canvas_width:
-                        canvas.coords(blue_bar, 0, 0, current_width + 1, canvas_height)
-                        canvas.coords(
-                            handle,
-                            current_width - handle_radius,
-                            0,
-                            current_width + handle_radius,
-                            canvas_height,
-                        )
-                    else:
-                        is_sliding["value"] = False  # Stop sliding when the bar is full
-                ply_sng.after(100, update_slider)  # Update every 100ms
+                if is_sliding["value"]:  # Check if the slider should move
+                    slider_state["is_sliding"] = True  # Mark as sliding
+                    slider_state["current_width"] += 1  # Increment the slider position
+
+                    # Stop sliding if the slider reaches the end
+                    if slider_state["current_width"] >= canvas_width:
+                        slider_state["current_width"] = canvas_width
+                        is_sliding["value"] = False  # Stop sliding
+
+                    # Update the slider's position
+                    canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
+                    canvas.coords(
+                        handle,
+                        slider_state["current_width"] - handle_radius,
+                        0,
+                        slider_state["current_width"] + handle_radius,
+                        canvas_height,
+                    )
+
+                    # Schedule the next update
+                    slider_state["timer"] = ply_sng.after(1000, update_slider)  # Update every 1 second
+                else:
+                    slider_state["is_sliding"] = False  # Mark as not sliding
+
+            # Function to start the slider
+            def start_slider():
+                if not slider_state["is_sliding"]:  # Prevent multiple timers
+                    update_slider()
+
+            # Function to stop the slider
+            def stop_slider():
+                if slider_state["timer"]:
+                    ply_sng.after_cancel(slider_state["timer"])  # Cancel the timer
+                    slider_state["timer"] = None
+                slider_state["is_sliding"] = False
+
+            # Bind the slider to start and stop events
+            canvas.bind("<Button-1>", lambda event: start_slider())  # Start sliding on click
+            canvas.bind("<ButtonRelease-1>", lambda event: stop_slider())  # Stop sliding on release
 
             # Start updating the slider
-            update_slider()
+            start_slider()
 
-        # Add the dynamic slider
+        # Initialize the sliding state
+        is_sliding = {"value": False}
+
+        # Add the dynamic slider to the "Music Player" tab
         add_dynamic_slider_to_music_player(is_sliding)
 
 
@@ -254,7 +284,7 @@ def main(repeat):
         def slct_sngs():
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
-            root.geometry("400x400")
+            root.geometry("")
             options = [] #Figure out how to integrate this later ===========================================================
 
             # Create and pack the MultiSelectListbox
@@ -279,12 +309,12 @@ def main(repeat):
     def edt_plylst(root):
         clear_frame(plylst)
 
-        root.geometry("400x400")
+        root.geometry("")
 
         def edit_sngs(option):
             nme = lstbox.curselection()
             clear_frame(plylst)
-            #root.geometry("400x150")
+            root.geometry("")
             nme = option[nme[0]]
 
             options = ["song1", "song2", "song3"] #Figure out how to integrate this later ===========================================================
@@ -330,7 +360,7 @@ def main(repeat):
 
     def delt(root):
         clear_frame(plylst)
-        root.geometry("400x400")
+        root.geometry("")
 
         def del_plylst():
             nme = lstbox.curselection()
@@ -362,7 +392,7 @@ def main(repeat):
 
     def show_plylst(root):
         clear_frame(plylst)
-        root.geometry("400x400")
+        root.geometry("")
         def show_songs():
             nme = lstbox.curselection()
             clear_frame(plylst)
@@ -435,22 +465,29 @@ def main(repeat):
             widget.destroy()
 
     # Function to handle tab changes
-    def on_tab_changed(event):
+    # Function to handle tab changes
+    def on_tab_changed(event, root, ply):
         selected_tab = notebook.tab(notebook.select(), "text")
         print(f"Tab changed to: {selected_tab}")  # Debugging: Print the selected tab
+
         if selected_tab == "Menu":
             if not menu.winfo_children():  # Only repopulate if the frame is empty
                 populate_menu()
+        elif selected_tab == "Music Player":
+            if ply == True:
+                root.update_idletasks()  # Update the geometry based on the widgets
+                root.geometry("")  # Let Tkinter automatically resize the window
         elif selected_tab == "Playlist edit":
             clear_frame(plylst)
-            root.geometry("400x150")
             pop_plylst()
+            root.update_idletasks()  # Update the geometry based on the widgets
+            root.geometry("")  # Let Tkinter automatically resize the window
             
 
     # Bind the tab change event
-    notebook.bind("<<NotebookTabChanged>>", on_tab_changed)
+    notebook.bind("<<NotebookTabChanged>>", lambda event: on_tab_changed(event, root, ply))
 
-    root.geometry("300x200")
+    root.geometry("")
     root.mainloop()
 
 repeat = True
