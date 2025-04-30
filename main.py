@@ -3,9 +3,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
-from audio import play_song, change_speed, set_volume
+from audio import *
 import time
-
 
 def main(repeat):
     root = tk.Tk()
@@ -47,7 +46,7 @@ def main(repeat):
                     self.listbox.selection_set(index)
 
         def print_selected_items(self):
-            # Print selected items in the terminal
+            # Print items in the terminal
             selected_indices = self.listbox.curselection()
             selected = [self.listbox.get(i) for i in selected_indices]
             export = [str(self.nme), selected] #['Playlist name', ['song1','song2'...]]
