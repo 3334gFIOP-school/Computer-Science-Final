@@ -122,3 +122,10 @@ def get_song_length(): # Gets the song length in seconds
         return length_in_seconds
     else:
         return 0  # Return 0 if audio data or sample rate is not available
+
+def get_current_position(): # Gets the current position in seconds
+    """Returns the current playback position in seconds."""
+    if audio_data is not None and sample_rate is not None:
+        return playback_position / sample_rate  # Convert to seconds
+    else:
+        return 0  # Return 0 if audio data or sample rate is not available
