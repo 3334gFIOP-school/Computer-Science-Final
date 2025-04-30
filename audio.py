@@ -18,7 +18,6 @@ step = 1 # This fixes the broken 0.5x speed, DO NOT TOUCH
 
 def play_song(play_button, file_path):  # Play or pause the song
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
-
     try:
         if audio_data is None or sample_rate is None:
             sample_rate, data = read(file_path)
@@ -86,8 +85,14 @@ def play_song(play_button, file_path):  # Play or pause the song
 
 
 def stop_song(): # Stops the song
-    global is_playing
+    global is_playing,current_speed, audio_data, sample_rate, playback_thread, playback_position,volume
     is_playing = False
+    current_speed = 1.0
+    audio_data = None
+    sample_rate = None
+    playback_thread = None
+    playback_position = 0
+    volume = 1.0  # Default volume 100%
     print("Stopped song")
 
 def set_volume(volume_slider, volume_label): # Sets the volume
@@ -110,3 +115,10 @@ def create_replay_button(root, play_button, file_path): # Replay button
     replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
     replay_button.pack()
 
+def get_song_length(): # Gets the song length in seconds
+    """Returns the length of the song in seconds."""
+    if audio_data is not None and sample_rate is not None:
+        length_in_seconds = len(audio_data) / sample_rate # Gets the song length seconds
+        return length_in_seconds
+    else:
+        return 0  # Return 0 if audio data or sample rate is not available
