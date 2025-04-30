@@ -10,7 +10,7 @@ import time
 def main(repeat):
     root = tk.Tk()
     root.title("Main Window")
-
+    is_sliding = False
     class MultiSelectListbox(tk.Frame):
         def __init__(self, master, options, nme, preselected_indices=None, **kwargs):
             super().__init__(master, **kwargs)
@@ -96,175 +96,157 @@ def main(repeat):
 
     # Populate the "menu" frame initially
     populate_menu()
-    attention = ("Helvetica", 20, "bold")
-    # Add some widgets to the "ply_sng" frame
-    ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10, columnspan=3)
-    pse_ply = tk.Button(
-        ply_sng,
-        text="▶",
-        command=lambda: play_song(pse_ply, "Audio/normal sound effect.wav"),
-        font=attention,
-    )
-    pse_ply.grid(row=1, column=1, padx=10, pady=10)
 
-    volume_label = ttk.Label(ply_sng, text="Volume: 50%", font=("Helvetica", 14))
-    volume_label.grid(row=2, column=1, padx=10, pady=5)  # Centered in column 1
+    def pick_plylst(root):
 
-    volume_slider = ttk.Scale(
-        ply_sng,
-        from_=0,
-        to=100,
-        orient="horizontal",
-        length=200,
-        command=lambda value: set_volume(volume_slider, volume_label),
-    )
-    volume_slider.set(50)
-    volume_slider.grid(row=3, column=1, padx=10, pady=5)
+        def clear_frame(frame):
+            print(f"Clearing frame: {frame}")  # Debugging: Print which frame is being cleared
+            for widget in frame.winfo_children():
+                print(f"Destroying widget: {widget}")  # Debugging: Print each widget being destroyed
+                widget.destroy()
 
-    speed_label = ttk.Label(ply_sng, text="Speed: 1x", font=("Helvetica", 14))
-    speed_label.grid(row=4, column=1, padx=10, pady=5)  # Centered in column 1
+        clear_frame(ply_sng)
+        root.geometry("400x400")
 
-    speed_slider = ttk.Scale(
-        ply_sng,
-        from_=0.50,
-        to=2.00,
-        orient="horizontal",
-        length=200,
-        command=lambda value: change_speed(speed_slider, speed_label),
-    )
-    speed_slider.set(1)
-    speed_slider.grid(row=5, column=1, padx=10, pady=5)  # Centered in column 1
+        def pck():
+            nme = lstbox.curselection()
+            clear_frame(ply_sng)
+            # This is someone else's ############################################################################################
+            pop_audio(root)
+        options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
 
-    # Add a dynamic slider to the "Music Player" tab
-    def add_dynamic_slider_to_music_player():
-        # Create a frame to hold the custom slider
-        slider_frame = tk.Frame(ply_sng, bg="white")  # White background
-        slider_frame.grid(row=6, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
+        # Scrollbar
+        scrollbar = tk.Scrollbar(ply_sng, orient='vertical')
+        scrollbar.pack(side='right', fill='y')
 
-        # Canvas for the custom slider
-        canvas_width = 300
-        canvas_height = 20
-        canvas = tk.Canvas(slider_frame, width=canvas_width, height=canvas_height, bg="white", highlightthickness=0)
-        canvas.pack()
-
-        # Create the lighter blue progress bar rectangle
-        blue_bar = canvas.create_rectangle(0, 0, 0, canvas_height, fill="lightblue", width=0)
-
-        # Create the slider handle (circle)
-        handle_radius = 10
-        handle = canvas.create_oval(
-            0 - handle_radius, 0, handle_radius, canvas_height, fill="white", outline="black"
+        # Listbox
+        lstbox = tk.Listbox(
+            ply_sng,
+            selectmode='single',
+            yscrollcommand=scrollbar.set
         )
+        lstbox.pack(side='left', fill='both', expand=True)
 
-        # Add a label to display the slider value
-        slider_value_label = tk.Label(slider_frame, text="Value: 0", font=("Helvetica", 14), bg="white")
-        slider_value_label.pack(pady=10)
+        # Configure the scrollbar to work with the Listbox
+        scrollbar.config(command=lstbox.yview)
 
-        # Variables to track progress
-        current_progress = 0
-        song_duration = 100  # Example song duration in seconds (adjust as needed)
-        is_sliding = False  # Flag to track if the user is manually sliding the handle
+        # Populate the Listbox with options
+        for option in options:
+            lstbox.insert(tk.END, option)
 
-        # Function to update the slider dynamically
-        def update_slider():
-            nonlocal current_progress
-            if not is_sliding:  # Only update if the user is not sliding
-                if current_progress <= song_duration:
-                    # Calculate the x-coordinate for the progress
-                    x = (current_progress / song_duration) * canvas_width
-                    # Update the lighter blue progress bar width
-                    canvas.coords(blue_bar, 0, 0, x, canvas_height)
-                    # Update the handle position
-                    canvas.coords(handle, x - handle_radius, 0, x + handle_radius, canvas_height)
-                    # Update the slider value label
-                    slider_value_label.config(text=f"Value: {current_progress}")
-                    # Increment the progress
-                    current_progress += 1
-                    # Schedule the next update in 1 second
-                    ply_sng.after(1000, update_slider)
+        ttk.Button(ply_sng, text="Pick playlist", command=pck).pack()
+    pick_plylst(root)
 
-        # Function to handle manual sliding
-        def on_slide(event):
-            nonlocal is_sliding, current_progress
-            is_sliding = True  # User is sliding
-            # Get the x-coordinate of the mouse click, constrained to the canvas width
-            x = max(0, min(event.x, canvas_width))
-            # Update the lighter blue progress bar width
-            canvas.coords(blue_bar, 0, 0, x, canvas_height)
-            # Update the handle position
-            canvas.coords(handle, x - handle_radius, 0, x + handle_radius, canvas_height)
-            # Calculate the slider value (0-100) based on the x-coordinate
-            current_progress = int((x / canvas_width) * song_duration)
-            slider_value_label.config(text=f"Value: {current_progress}")
+    def pop_audio(root):
+        root.geometry("350x350")
+        clear_frame(ply_sng)  # Clear the previous content of the audio tab
+        attention = ("Helvetica", 20, "bold")
 
-        # Function to handle when the user releases the slider
-        def on_release(event):
-            nonlocal is_sliding
-            is_sliding = False  # User has stopped sliding
-            update_slider()  # Resume automatic updates
+        # Add a label for the music playing tab
+        ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10, columnspan=3)
 
-        # Bind mouse events to the canvas
-        canvas.bind("<B1-Motion>", on_slide)  # Dragging the slider
-        canvas.bind("<Button-1>", on_slide)   # Clicking on the slider
-        canvas.bind("<ButtonRelease-1>", on_release)  # Releasing the slider
+        # State variable to track whether the song is sliding
+        is_sliding = {"value": False}
 
-        # Start the slider update loop
-        update_slider()
+        # Function to handle play/pause button
+        def ply(pse_ply, file_path, is_sliding):
+            if pse_ply["text"] == "▶":  # If the button shows "play"
+                pse_ply["text"] = "⏸"  # Change to "pause"
+                is_sliding["value"] = True  # Set is_sliding to True
+                play_song(pse_ply, file_path)  # Play the song
+            else:  # If the button shows "pause"
+                pse_ply["text"] = "▶"  # Change to "play"
+                is_sliding["value"] = False  # Set is_sliding to False
+                play_song(pse_ply, file_path)  # Pause the song (you need to implement this function)
 
-    # Call the function to add the dynamic slider to the "Music Player" tab
-    add_dynamic_slider_to_music_player()
+        # Play/Pause button
+        pse_ply = tk.Button(
+            ply_sng,
+            text="▶",
+            command=lambda: ply(pse_ply, "Audio/normal sound effect.wav", is_sliding),
+            font=attention,
+        )
+        pse_ply.grid(row=1, column=1, padx=10, pady=10)
 
-    # Add widgets to the "test_tab" frame
-    ttk.Label(test_tab, text="Test Tab with Custom Slider").grid(row=0, column=0, padx=10, pady=10)
+        # Volume label and slider
+        volume_label = ttk.Label(ply_sng, text="Volume: 50%", font=("Helvetica", 14))
+        volume_label.grid(row=2, column=1, padx=10, pady=5)  # Centered in column 1
 
-    # Create a frame to hold the custom slider
-    slider_frame = tk.Frame(test_tab, bg="white")  # White background
-    slider_frame.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
+        volume_slider = ttk.Scale(
+            ply_sng,
+            from_=0,
+            to=100,
+            orient="horizontal",
+            length=200,
+            command=lambda value: set_volume(volume_slider, volume_label),
+        )
+        volume_slider.set(50)
+        volume_slider.grid(row=3, column=1, padx=10, pady=5)
 
-    # Canvas for the custom slider
-    canvas_width = 300
-    canvas_height = 20
-    canvas = tk.Canvas(slider_frame, width=canvas_width, height=canvas_height, bg="white", highlightthickness=0)
-    canvas.pack()
+        # Speed label and slider
+        speed_label = ttk.Label(ply_sng, text="Speed: 1x", font=("Helvetica", 14))
+        speed_label.grid(row=4, column=1, padx=10, pady=5)  # Centered in column 1
 
-    # Create the lighter blue progress bar rectangle
-    blue_bar = canvas.create_rectangle(0, 0, 0, canvas_height, fill="lightblue", width=0)
+        speed_slider = ttk.Scale(
+            ply_sng,
+            from_=0.5,
+            to=2.0,
+            orient="horizontal",
+            length=200,
+            command=lambda value: change_speed(speed_slider, speed_label),
+        )
+        speed_slider.set(1.0)
+        speed_slider.grid(row=5, column=1, padx=10, pady=5)
 
-    # Create the slider handle (circle)
-    handle_radius = 10
-    handle = canvas.create_oval(
-        0 - handle_radius, 0, handle_radius, canvas_height, fill="white", outline="black"
-    )
+        # Add a dynamic slider to the "Music Player" tab
+        def add_dynamic_slider_to_music_player(is_sliding):
+            # Create a frame to hold the custom slider
+            slider_frame = tk.Frame(ply_sng, bg="white")  # White background
+            slider_frame.grid(row=6, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
 
-    # Add a label to display the slider value
-    slider_value_label = tk.Label(slider_frame, text="Value: 50", font=("Helvetica", 14), bg="white")
-    slider_value_label.pack(pady=10)
+            # Canvas for the custom slider
+            canvas_width = 300
+            canvas_height = 20
+            canvas = tk.Canvas(slider_frame, width=canvas_width, height=canvas_height, bg="white", highlightthickness=0)
+            canvas.pack()
 
-    # Function to update the lighter blue progress bar and handle position
-    def update_slider(event):
-        # Get the x-coordinate of the mouse click, constrained to the canvas width
-        x = max(0, min(event.x, canvas_width))
-        # Update the lighter blue progress bar width
-        canvas.coords(blue_bar, 0, 0, x, canvas_height)
-        # Update the handle position
-        canvas.coords(handle, x - handle_radius, 0, x + handle_radius, canvas_height)
-        # Calculate the slider value (0-100) based on the x-coordinate
-        value = int((x / canvas_width) * 100)
-        slider_value_label.config(text=f"Value: {value}")
+            # Create the lighter blue progress bar rectangle
+            blue_bar = canvas.create_rectangle(0, 0, 0, canvas_height, fill="lightblue", width=0)
 
-    # Bind mouse events to the canvas
-    canvas.bind("<B1-Motion>", update_slider)  # Dragging the slider
-    canvas.bind("<Button-1>", update_slider)   # Clicking on the slider
+            # Create the slider handle (circle)
+            handle_radius = 10
+            handle = canvas.create_oval(
+                -handle_radius,
+                0,
+                handle_radius,
+                canvas_height,
+                fill="blue",
+                outline="",
+            )
 
-    # Restore the theme
-    style = ttk.Style()
-    style.theme_use("clam")  # Restore the "clam" theme
-    style.configure(
-        "Custom.Horizontal.TScale",
-        troughcolor="#e0e0e0",  # Background color of the trough
-        sliderthickness=5,     # Thickness of the slider
-        background="#4caf50",   # Color of the slider
-    )
+            # Function to update the slider position
+            def update_slider():
+                if is_sliding["value"]:
+                    current_width = canvas.coords(blue_bar)[2]
+                    if current_width < canvas_width:
+                        canvas.coords(blue_bar, 0, 0, current_width + 1, canvas_height)
+                        canvas.coords(
+                            handle,
+                            current_width - handle_radius,
+                            0,
+                            current_width + handle_radius,
+                            canvas_height,
+                        )
+                    else:
+                        is_sliding["value"] = False  # Stop sliding when the bar is full
+                ply_sng.after(100, update_slider)  # Update every 100ms
+
+            # Start updating the slider
+            update_slider()
+
+        # Add the dynamic slider
+        add_dynamic_slider_to_music_player(is_sliding)
+
 
     def create_plylst(root):
         clear_frame(plylst)
@@ -460,8 +442,6 @@ def main(repeat):
         if selected_tab == "Menu":
             if not menu.winfo_children():  # Only repopulate if the frame is empty
                 populate_menu()
-        elif selected_tab == "Music Player":
-            root.geometry("350x350")
         elif selected_tab == "Playlist edit":
             clear_frame(plylst)
             root.geometry("400x150")
