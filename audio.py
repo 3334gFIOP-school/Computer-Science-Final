@@ -5,6 +5,8 @@ import sounddevice as sd
 import numpy as np
 from scipy.io.wavfile import read
 import threading
+from save_load import *
+from song_handling import *
 
 # Global variables
 is_playing = False
@@ -122,3 +124,13 @@ def get_song_length(): # Gets the song length in seconds
         return length_in_seconds
     else:
         return 0  # Return 0 if audio data or sample rate is not available
+    
+def next_song(): # play next song
+    global current_song
+    temp_songlist = load_to_playlists("songs.csv")
+    for x in temp_songlist:
+        print(x.values())
+        for y in x:
+            if temp_songlist[x][y] == current_song:
+                next_song = temp_songlist[x][y+1]
+                return next_song
