@@ -36,8 +36,8 @@ Paragraph describing how to use the project.
 
 ## Current Features  
 ---
-+ First feature I am proud of  
-+ Second feature I am proud of  
++ It plays songs  
++ You can change the volume and speed  
 + Third feature I am proud of  
 
 ## Contributions  
@@ -46,7 +46,7 @@ Not used for this class.
 
 ## Contributors  
 ---
-+ Copilot - what they did: everything   
++ Copilot - Helping with using libraries and debugging  
 + Person who helped 2 - what they did  
 + Person who helped 3 - what they did  
 + Person who helped 4 - what they did  
@@ -61,7 +61,7 @@ Jackson:
 Alec:
 
 Sawyer:  
-I am a computer science student and I work on python projects. yay.
+I am a computer science student and I work on python projects.
 
 Vincent:
 
