@@ -129,7 +129,7 @@ def next_song(): # play next song
     global current_song
     temp_songlist = load_to_playlists("songs.csv")
     for x in temp_songlist:
-        print(x.values())
+        print(f'{x}\n{temp_songlist[x]}')
         for y in x:
             if temp_songlist[x][y] == current_song:
                 next_song = temp_songlist[x][y+1]
