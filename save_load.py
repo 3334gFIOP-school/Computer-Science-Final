@@ -85,3 +85,40 @@ def load_to_playlists(csv):
 def songs_to_save(songs, csv):
     songs = playlists_to_songs(songs)
     save(songs, csv)
+
+
+
+#functoin to get the names of a playlist
+def playlist_names(playlists):
+    names = []
+    for i in playlists:
+        names.append(i)
+
+    return names
+
+
+
+#functoin to get the songs in a playlist
+def playlist_songs(playlists, name):
+    songs = []
+    for i in playlists[name]:
+        songs.append(i)
+
+    return songs
+
+
+
+#functoin to separate a list of songs into names and paths
+def sep_songs(songs):
+    #get song names
+    song_names = []
+    for i in songs:
+        song_names.append(i[0])
+
+    #get song paths
+    song_paths = []
+    for i in songs:
+        song_paths.append(i[1])
+
+    return song_names, song_paths
+
