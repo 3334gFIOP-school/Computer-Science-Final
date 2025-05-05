@@ -4,9 +4,13 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from audio import *
+from save_load import *
 import time
 
 def main(repeat):
+    #variable, dictoinary that stores playlists and songs
+    playlists = load_to_playlists('songs.csv')
+    
     root = tk.Tk()
     root.title("Main Window")
     ply = False
@@ -109,7 +113,7 @@ def main(repeat):
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
             pop_audio(root, ply)
-        options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(ply_sng, orient='vertical')
@@ -346,7 +350,7 @@ def main(repeat):
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
             root.geometry("")
-            options = [] #Figure out how to integrate this later ===========================================================
+            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
 
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme.get())
@@ -378,7 +382,7 @@ def main(repeat):
             root.geometry("")
             nme = option[nme[0]]
 
-            options = ["song1", "song2", "song3"] #Figure out how to integrate this later ===========================================================
+            options = playlist_songs(playlists, nme) #Figure out how to integrate this later ===========================================================
             preselected_indices = [0, 2]  # Integrate this with everything else ###################################################################################
 
             # Create and pack the MultiSelectListbox
@@ -396,7 +400,7 @@ def main(repeat):
 
             # The rest of this is someone else's ############################################################################################
 
-        option = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        option = playlist_names(playlists) #Integrate this with everything else ###################################################################################                    EEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -428,7 +432,7 @@ def main(repeat):
             clear_frame(plylst)
             # This is someone else's ############################################################################################
             pop_plylst()
-        options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -454,7 +458,7 @@ def main(repeat):
     def show_plylst(root):
         clear_frame(plylst)
         root.geometry("")
-        def show_songs():
+        def show_songs(option):
             nme = lstbox.curselection()
             clear_frame(plylst)
 
@@ -463,7 +467,7 @@ def main(repeat):
                 pop_plylst()
 
 
-            options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+            options = playlist_songs(playlists, option[0]) #Integrate this with everything else ###################################################################################                 EEEEEEEEEEEEE
 
             # Scrollbar
             scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -486,7 +490,7 @@ def main(repeat):
 
             ttk.Button(plylst, text="Go back", command=back).pack()
             
-        options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################                     EEEEEEEEEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -507,7 +511,7 @@ def main(repeat):
         for option in options:
             lstbox.insert(tk.END, option)
 
-        ttk.Button(plylst, text="Pick playlist", command=show_songs).pack()
+        ttk.Button(plylst, text="Pick playlist", command=lambda: show_songs(options)).pack()
 
 
 
