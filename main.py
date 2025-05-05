@@ -287,6 +287,8 @@ def main(repeat):
 
         def slct_sngs():
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
+            if nme.get() not in playlists:
+                playlists[nme.get()] = []
             clear_frame(plylst)
             root.geometry("")
             options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
@@ -294,7 +296,7 @@ def main(repeat):
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme.get())
             listbox.pack(padx=10, pady=10, fill='both', expand=True)
-
+            
             # Add a button to clear selected items
             clear_button = tk.Button(plylst, text="Clear selection", command=listbox.clear_selection)
             clear_button.pack(pady=10)
