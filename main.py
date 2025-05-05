@@ -289,7 +289,7 @@ def main(repeat):
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
             root.geometry("")
-            options = [] #Figure out how to integrate this later ===========================================================
+            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
 
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme.get())
@@ -397,7 +397,7 @@ def main(repeat):
     def show_plylst(root):
         clear_frame(plylst)
         root.geometry("")
-        def show_songs():
+        def show_songs(option):
             nme = lstbox.curselection()
             clear_frame(plylst)
 
@@ -406,7 +406,7 @@ def main(repeat):
                 pop_plylst()
 
 
-            options = playlist_names(playlists) #Integrate this with everything else ###################################################################################                 EEEEEEEEEEEEE
+            options = playlist_songs(playlists, option[0]) #Integrate this with everything else ###################################################################################                 EEEEEEEEEEEEE
 
             # Scrollbar
             scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -450,7 +450,7 @@ def main(repeat):
         for option in options:
             lstbox.insert(tk.END, option)
 
-        ttk.Button(plylst, text="Pick playlist", command=show_songs).pack()
+        ttk.Button(plylst, text="Pick playlist", command=lambda: show_songs(options)).pack()
 
 
 

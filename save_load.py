@@ -122,3 +122,13 @@ def sep_songs(songs):
 
     return song_names, song_paths
 
+
+
+#functoin to make a list of all songs
+def list_songs(csv):
+    songs = load(csv)
+    song_list = []
+    for i in songs['name']:
+        song_list.append([songs['name'][i],songs['path'][i]])
+
+    return song_list
