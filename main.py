@@ -13,7 +13,6 @@ def main(repeat):
     
     root = tk.Tk()
     root.title("Main Window")
-    is_sliding = False
     ply = False
     class MultiSelectListbox(tk.Frame):
         def __init__(self, master, options, nme, preselected_indices=None, **kwargs):
@@ -145,20 +144,23 @@ def main(repeat):
         attention = ("Helvetica", 20, "bold")
 
         # Add a label for the music playing tab
-        ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10, columnspan=3)
+        ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10)
 
-        # State variable to track whether the song is sliding
-        is_sliding = {"value": False}
+        # State variables
+        is_sliding = {"value": False}  # Track whether the slider is moving
+        slider_timer = {"timer": None}  # Track the slider's timer
+        slider_state = {"current_width": 0}  # Track the slider's current position
 
         # Function to handle play/pause button
         def ply(pse_ply, file_path, is_sliding):
             if pse_ply["text"] == "▶":  # If the button shows "play"
-                pse_ply["text"] = "⏸"  # Change to "pause"
                 is_sliding["value"] = True  # Set is_sliding to True
                 play_song(pse_ply, file_path)  # Play the song
             else:  # If the button shows "pause"
-                pse_ply["text"] = "▶"  # Change to "play"
                 is_sliding["value"] = False  # Set is_sliding to False
+                if slider_timer["timer"]:  # Cancel the slider timer
+                    ply_sng.after_cancel(slider_timer["timer"])
+                    slider_timer["timer"] = None
                 play_song(pse_ply, file_path)  # Pause the song (you need to implement this function)
 
         # Play/Pause button
@@ -168,7 +170,7 @@ def main(repeat):
             command=lambda: ply(pse_ply, "Audio/normal sound effect.wav", is_sliding),
             font=attention,
         )
-        pse_ply.grid(row=1, column=1, padx=10, pady=10)
+        pse_ply.grid(row=2, column=1, padx=10, pady=10)
 
         # Volume label and slider
         volume_label = ttk.Label(ply_sng, text="Volume: 50%", font=("Helvetica", 14))
@@ -200,8 +202,7 @@ def main(repeat):
         speed_slider.set(1.0)
         speed_slider.grid(row=5, column=1, padx=10, pady=5)
 
-                # Add a dynamic slider to the "Music Player" tab
-        def add_dynamic_slider_to_music_player(is_sliding):
+        def add_dynamic_slider_to_music_player(is_sliding, get_song_length, get_current_position, seek_to_position):
             # Create a frame to hold the custom slider
             slider_frame = tk.Frame(ply_sng, bg="white")  # White background
             slider_frame.grid(row=6, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
@@ -227,58 +228,122 @@ def main(repeat):
             )
 
             # State to track the slider's position and whether it's sliding
-            slider_state = {"current_width": 0, "is_sliding": False, "timer": None}
+            slider_state = {"current_width": 0, "timer": None, "is_dragging": False}
 
             # Function to update the slider position
             def update_slider():
-                if is_sliding["value"]:  # Check if the slider should move
-                    slider_state["is_sliding"] = True  # Mark as sliding
-                    slider_state["current_width"] += 1  # Increment the slider position
+                if is_sliding["value"] and not slider_state["is_dragging"]:  # Only update if the slider is moving and not being dragged
+                    song_length = get_song_length()  # Get the total length of the song in seconds
+                    current_position = get_current_position()  # Get the current playback position in seconds
 
-                    # Stop sliding if the slider reaches the end
-                    if slider_state["current_width"] >= canvas_width:
-                        slider_state["current_width"] = canvas_width
-                        is_sliding["value"] = False  # Stop sliding
+                    if song_length > 0:
+                        # Calculate the slider's position based on the current playback position
+                        slider_state["current_width"] = (current_position / song_length) * canvas_width
 
-                    # Update the slider's position
-                    canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
-                    canvas.coords(
-                        handle,
-                        slider_state["current_width"] - handle_radius,
-                        0,
-                        slider_state["current_width"] + handle_radius,
-                        canvas_height,
-                    )
+                        # Stop sliding if the slider reaches the end
+                        if slider_state["current_width"] >= canvas_width:
+                            slider_state["current_width"] = canvas_width
+                            is_sliding["value"] = False  # Stop sliding
+                            stop_slider()  # Stop the slider
+                            return
+
+                        # Update the slider's position visually
+                        canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
+                        canvas.coords(
+                            handle,
+                            slider_state["current_width"] - handle_radius,
+                            0,
+                            slider_state["current_width"] + handle_radius,
+                            canvas_height,
+                        )
 
                     # Schedule the next update
                     slider_state["timer"] = ply_sng.after(1000, update_slider)  # Update every 1 second
                 else:
-                    slider_state["is_sliding"] = False  # Mark as not sliding
+                    # Stop the timer if the slider is not sliding
+                    stop_slider()
 
             # Function to start the slider
             def start_slider():
-                if not slider_state["is_sliding"]:  # Prevent multiple timers
+                if not slider_state["timer"]:  # Prevent multiple timers
+                    is_sliding["value"] = True
                     update_slider()
 
             # Function to stop the slider
             def stop_slider():
+                is_sliding["value"] = False
                 if slider_state["timer"]:
-                    ply_sng.after_cancel(slider_state["timer"])  # Cancel the timer
+                    ply_sng.after_cancel(slider_state["timer"])
                     slider_state["timer"] = None
-                slider_state["is_sliding"] = False
 
-            # Bind the slider to start and stop events
-            canvas.bind("<Button-1>", lambda event: start_slider())  # Start sliding on click
-            canvas.bind("<ButtonRelease-1>", lambda event: stop_slider())  # Stop sliding on release
+            # Function to reset the slider
+            def reset_slider():
+                stop_slider()
+                slider_state["current_width"] = 0
+                canvas.coords(blue_bar, 0, 0, 0, canvas_height)
+                canvas.coords(
+                    handle,
+                    -handle_radius,
+                    0,
+                    handle_radius,
+                    canvas_height,
+                )
+
+            # Function to handle manual dragging of the slider
+            def on_drag_start(event):
+                slider_state["is_dragging"] = True
+
+            def on_drag(event):
+                # Calculate the new position of the slider based on the mouse position
+                new_width = max(0, min(event.x, canvas_width))
+                slider_state["current_width"] = new_width
+
+                # Update the slider's position visually
+                canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
+                canvas.coords(
+                    handle,
+                    slider_state["current_width"] - handle_radius,
+                    0,
+                    slider_state["current_width"] + handle_radius,
+                    canvas_height,
+                )
+
+            def on_drag_end(event):
+                slider_state["is_dragging"] = False
+
+                # Calculate the new playback position based on the slider's position
+                song_length = get_song_length()
+                if song_length > 0:
+                    new_position = (slider_state["current_width"] / canvas_width) * song_length
+                    seek_to_position(new_position)  # Seek to the new position in the song
+
+            # Bind the slider to start, drag, and end events
+            canvas.bind("<Button-1>", on_drag_start)  # Start dragging on click
+            canvas.bind("<B1-Motion>", on_drag)  # Drag while holding the mouse button
+            canvas.bind("<ButtonRelease-1>", on_drag_end)  # Stop dragging on release
 
             # Start updating the slider
             start_slider()
+        import random
 
-        # Initialize the sliding state
+        # Mock function to get a random song length
+        def get_song_length():
+            return random.randint(60, 300)  # Random length between 1 and 5 minutes
+
+        # Mock function to get a random current position
+        def get_current_position():
+            song_length = get_song_length()
+            return random.uniform(0, song_length)  # Random position within the song length
+
+        # Mock function to simulate seeking to a position
+        def seek_to_position(position):
+            print(f"Seeking to position: {position:.2f} seconds")  # Print the seek position for testing
+
+        # Mock `is_sliding` state
         is_sliding = {"value": False}
 
-        # Add the dynamic slider to the "Music Player" tab
-        add_dynamic_slider_to_music_player(is_sliding)
+        # Call the function to add the slider with mocked functions
+        add_dynamic_slider_to_music_player(is_sliding, get_song_length, get_current_position, seek_to_position)
 
 
     def create_plylst(root):
