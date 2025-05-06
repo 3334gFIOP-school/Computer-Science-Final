@@ -4,12 +4,15 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from audio import *
+from save_load import *
 import time
 
 def main(repeat):
+    #variable, dictoinary that stores playlists and songs
+    playlists = load_to_playlists('songs.csv')
+    
     root = tk.Tk()
     root.title("Main Window")
-    is_sliding = False
     ply = False
     class MultiSelectListbox(tk.Frame):
         def __init__(self, master, options, nme, preselected_indices=None, **kwargs):
@@ -110,7 +113,7 @@ def main(repeat):
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
             pop_audio(root, ply)
-        options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(ply_sng, orient='vertical')
@@ -141,30 +144,33 @@ def main(repeat):
         attention = ("Helvetica", 20, "bold")
 
         # Add a label for the music playing tab
-        ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10, columnspan=3)
+        ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10)
 
-        # State variable to track whether the song is sliding
-        is_sliding = {"value": False}
+        # State variables
+        is_sliding = {"value": False}  # Track whether the slider is moving
+        slider_timer = {"timer": None}  # Track the slider's timer
+        slider_state = {"current_width": 0}  # Track the slider's current position
 
         # Function to handle play/pause button
         def ply(pse_ply, file_path, is_sliding):
             if pse_ply["text"] == "▶":  # If the button shows "play"
-                pse_ply["text"] = "⏸"  # Change to "pause"
                 is_sliding["value"] = True  # Set is_sliding to True
                 play_song(pse_ply, file_path)  # Play the song
             else:  # If the button shows "pause"
-                pse_ply["text"] = "▶"  # Change to "play"
                 is_sliding["value"] = False  # Set is_sliding to False
+                if slider_timer["timer"]:  # Cancel the slider timer
+                    ply_sng.after_cancel(slider_timer["timer"])
+                    slider_timer["timer"] = None
                 play_song(pse_ply, file_path)  # Pause the song (you need to implement this function)
 
         # Play/Pause button
         pse_ply = tk.Button(
             ply_sng,
             text="▶",
-            command=lambda: ply(pse_ply, "Audio/normal sound effect.wav", is_sliding),
+            command=lambda: ply(pse_ply, "Audio/Elektronomia - Summersong.wav", is_sliding),
             font=attention,
         )
-        pse_ply.grid(row=1, column=1, padx=10, pady=10)
+        pse_ply.grid(row=2, column=1, padx=10, pady=10)
 
         # Volume label and slider
         volume_label = ttk.Label(ply_sng, text="Volume: 50%", font=("Helvetica", 14))
@@ -196,8 +202,7 @@ def main(repeat):
         speed_slider.set(1.0)
         speed_slider.grid(row=5, column=1, padx=10, pady=5)
 
-                # Add a dynamic slider to the "Music Player" tab
-        def add_dynamic_slider_to_music_player(is_sliding):
+        def add_dynamic_slider_to_music_player(is_sliding, get_song_length, get_current_position, seek_to_position):
             # Create a frame to hold the custom slider
             slider_frame = tk.Frame(ply_sng, bg="white")  # White background
             slider_frame.grid(row=6, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
@@ -223,58 +228,122 @@ def main(repeat):
             )
 
             # State to track the slider's position and whether it's sliding
-            slider_state = {"current_width": 0, "is_sliding": False, "timer": None}
+            slider_state = {"current_width": 0, "timer": None, "is_dragging": False}
 
             # Function to update the slider position
             def update_slider():
-                if is_sliding["value"]:  # Check if the slider should move
-                    slider_state["is_sliding"] = True  # Mark as sliding
-                    slider_state["current_width"] += 1  # Increment the slider position
+                if is_sliding["value"] and not slider_state["is_dragging"]:  # Only update if the slider is moving and not being dragged
+                    song_length = get_song_length()  # Get the total length of the song in seconds
+                    current_position = get_current_position()  # Get the current playback position in seconds
 
-                    # Stop sliding if the slider reaches the end
-                    if slider_state["current_width"] >= canvas_width:
-                        slider_state["current_width"] = canvas_width
-                        is_sliding["value"] = False  # Stop sliding
+                    if song_length > 0:
+                        # Calculate the slider's position based on the current playback position
+                        slider_state["current_width"] = (current_position / song_length) * canvas_width
 
-                    # Update the slider's position
-                    canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
-                    canvas.coords(
-                        handle,
-                        slider_state["current_width"] - handle_radius,
-                        0,
-                        slider_state["current_width"] + handle_radius,
-                        canvas_height,
-                    )
+                        # Stop sliding if the slider reaches the end
+                        if slider_state["current_width"] >= canvas_width:
+                            slider_state["current_width"] = canvas_width
+                            is_sliding["value"] = False  # Stop sliding
+                            stop_slider()  # Stop the slider
+                            return
+
+                        # Update the slider's position visually
+                        canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
+                        canvas.coords(
+                            handle,
+                            slider_state["current_width"] - handle_radius,
+                            0,
+                            slider_state["current_width"] + handle_radius,
+                            canvas_height,
+                        )
 
                     # Schedule the next update
                     slider_state["timer"] = ply_sng.after(1000, update_slider)  # Update every 1 second
                 else:
-                    slider_state["is_sliding"] = False  # Mark as not sliding
+                    # Stop the timer if the slider is not sliding
+                    stop_slider()
 
             # Function to start the slider
             def start_slider():
-                if not slider_state["is_sliding"]:  # Prevent multiple timers
+                if not slider_state["timer"]:  # Prevent multiple timers
+                    is_sliding["value"] = True
                     update_slider()
 
             # Function to stop the slider
             def stop_slider():
+                is_sliding["value"] = False
                 if slider_state["timer"]:
-                    ply_sng.after_cancel(slider_state["timer"])  # Cancel the timer
+                    ply_sng.after_cancel(slider_state["timer"])
                     slider_state["timer"] = None
-                slider_state["is_sliding"] = False
 
-            # Bind the slider to start and stop events
-            canvas.bind("<Button-1>", lambda event: start_slider())  # Start sliding on click
-            canvas.bind("<ButtonRelease-1>", lambda event: stop_slider())  # Stop sliding on release
+            # Function to reset the slider
+            def reset_slider():
+                stop_slider()
+                slider_state["current_width"] = 0
+                canvas.coords(blue_bar, 0, 0, 0, canvas_height)
+                canvas.coords(
+                    handle,
+                    -handle_radius,
+                    0,
+                    handle_radius,
+                    canvas_height,
+                )
+
+            # Function to handle manual dragging of the slider
+            def on_drag_start(event):
+                slider_state["is_dragging"] = True
+
+            def on_drag(event):
+                # Calculate the new position of the slider based on the mouse position
+                new_width = max(0, min(event.x, canvas_width))
+                slider_state["current_width"] = new_width
+
+                # Update the slider's position visually
+                canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
+                canvas.coords(
+                    handle,
+                    slider_state["current_width"] - handle_radius,
+                    0,
+                    slider_state["current_width"] + handle_radius,
+                    canvas_height,
+                )
+
+            def on_drag_end(event):
+                slider_state["is_dragging"] = False
+
+                # Calculate the new playback position based on the slider's position
+                song_length = get_song_length()
+                if song_length > 0:
+                    new_position = (slider_state["current_width"] / canvas_width) * song_length
+                    seek_to_position(new_position)  # Seek to the new position in the song
+
+            # Bind the slider to start, drag, and end events
+            canvas.bind("<Button-1>", on_drag_start)  # Start dragging on click
+            canvas.bind("<B1-Motion>", on_drag)  # Drag while holding the mouse button
+            canvas.bind("<ButtonRelease-1>", on_drag_end)  # Stop dragging on release
 
             # Start updating the slider
             start_slider()
+        import random
 
-        # Initialize the sliding state
+        # Mock function to get a random song length
+        def get_song_length():
+            return random.randint(60, 300)  # Random length between 1 and 5 minutes
+
+        # Mock function to get a random current position
+        def get_current_position():
+            song_length = get_song_length()
+            return random.uniform(0, song_length)  # Random position within the song length
+
+        # Mock function to simulate seeking to a position
+        def seek_to_position(position):
+            print(f"Seeking to position: {position:.2f} seconds")  # Print the seek position for testing
+
+        # Mock `is_sliding` state
         is_sliding = {"value": False}
 
-        # Add the dynamic slider to the "Music Player" tab
-        add_dynamic_slider_to_music_player(is_sliding)
+        # Call the function to add the slider with mocked functions
+        add_dynamic_slider_to_music_player(is_sliding, get_song_length, get_current_position, seek_to_position)
 
 
     def create_plylst(root):
@@ -285,7 +354,7 @@ def main(repeat):
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
             root.geometry("")
-            options = [] #Figure out how to integrate this later ===========================================================
+            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
 
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme.get())
@@ -317,7 +386,7 @@ def main(repeat):
             root.geometry("")
             nme = option[nme[0]]
 
-            options = ["song1", "song2", "song3"] #Figure out how to integrate this later ===========================================================
+            options = playlist_songs(playlists, nme) #Figure out how to integrate this later ===========================================================
             preselected_indices = [0, 2]  # Integrate this with everything else ###################################################################################
 
             # Create and pack the MultiSelectListbox
@@ -335,7 +404,7 @@ def main(repeat):
 
             # The rest of this is someone else's ############################################################################################
 
-        option = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        option = playlist_names(playlists) #Integrate this with everything else ###################################################################################                    EEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -367,7 +436,7 @@ def main(repeat):
             clear_frame(plylst)
             # This is someone else's ############################################################################################
             pop_plylst()
-        options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -393,7 +462,7 @@ def main(repeat):
     def show_plylst(root):
         clear_frame(plylst)
         root.geometry("")
-        def show_songs():
+        def show_songs(option):
             nme = lstbox.curselection()
             clear_frame(plylst)
 
@@ -402,7 +471,7 @@ def main(repeat):
                 pop_plylst()
 
 
-            options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+            options = playlist_songs(playlists, option[0]) #Integrate this with everything else ###################################################################################                 EEEEEEEEEEEEE
 
             # Scrollbar
             scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -425,7 +494,7 @@ def main(repeat):
 
             ttk.Button(plylst, text="Go back", command=back).pack()
             
-        options = ["option 1", "option 2", "option 3"] #Integrate this with everything else ###################################################################################
+        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################                     EEEEEEEEEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -446,7 +515,7 @@ def main(repeat):
         for option in options:
             lstbox.insert(tk.END, option)
 
-        ttk.Button(plylst, text="Pick playlist", command=show_songs).pack()
+        ttk.Button(plylst, text="Pick playlist", command=lambda: show_songs(options)).pack()
 
 
 
