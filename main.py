@@ -55,6 +55,16 @@ def main(repeat):
             selected = [self.listbox.get(i) for i in selected_indices]
             export = [str(self.nme), selected] #['Playlist name', ['song1','song2'...]]
             print(f"Selected items: {selected}")
+
+            #update playlists, adding and removing songs
+            playlists[export[0]] = []
+            for i in export[1]:
+                playlists[export[0]].append(i)
+
+            print(playlists)
+#            playlists_to_save(playlists, 'songs.csv')
+
+            
             try:
                 # Export ans save here
                 pass
@@ -352,8 +362,6 @@ def main(repeat):
 
         def slct_sngs():
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
-            if nme.get() in playlists:
-                nme.get() = 'e'
             clear_frame(plylst)
             root.geometry("")
             options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
