@@ -104,10 +104,9 @@ def next_song_in_playlist(current_playlist, current_song_name):
             return current_playlist[x][1]  # Return the next song in the playlist's file path
         
 def next_shuffled_song(current_playlist, current_song_name):
-    x = current_playlist.index(current_song_name)
     random_song = random.choice(current_playlist)
-    
-    if random_song != current_song_name:
+
+    if random_song[0] != current_song_name:
         return random_song[1]  # Return the file path of the random song
     else:
         return next_shuffled_song(current_playlist, current_song_name)
