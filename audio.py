@@ -70,7 +70,7 @@ def play_song(play_button, file_path):  # Play or pause the song
                 while is_playing:
                     sd.sleep(100)
 
-        if play_button["text"] == "▶":
+        if play_button["text"] == "▶️":
             is_playing = True
             # Do not reset playback_position here
             playback_thread = threading.Thread(target=playback_thread_func)
@@ -79,7 +79,7 @@ def play_song(play_button, file_path):  # Play or pause the song
             print("Playing song")
         else:
             is_playing = False  # Pause only (retain position)
-            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+            play_button.config(text="▶️", font=("Helvetica", 20, "bold"))
             print("Paused song")
 
     except Exception as err:
@@ -103,16 +103,16 @@ def set_volume(volume_slider, volume_label): # Sets the volume
     volume_label.config(text=f"Volume: {int(volume * 100)}%")
     print(f"Volume set to {int(volume * 100)}%")
 
-def change_speed(speed_slider, speed_label): # Changes the speed
+def change_speed(value, label):  # Changes the speed
     global current_speed
-    current_speed = round(speed_slider.get(), 1)
-    speed_label.config(text=f"Speed: {current_speed}x")
+    current_speed = round(float(value), 1)  # Convert value to float and round it
+    label.config(text=f"Speed: {current_speed}x")
     print(f"Playback speed changed to {current_speed}x")
 
 def create_replay_button(root, play_button, file_path): # Replay button
     def replay_song():
         stop_song()
-        play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+        play_button.config(text="▶️", font=("Helvetica", 20, "bold"))
         play_song(play_button, file_path)
     replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
     replay_button.pack()

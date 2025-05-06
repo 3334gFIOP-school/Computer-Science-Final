@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from audio import *
+print(set_volume)
 from save_load import *
 import time
 
@@ -138,44 +139,19 @@ def main(repeat):
     pick_plylst(root)
 
     def pop_audio(root, ply):
+        from audio import play_song, stop_song, set_volume, get_song_length
+
         ply = False
         root.geometry("")
         clear_frame(ply_sng)  # Clear the previous content of the audio tab
-        attention = ("Helvetica", 20, "bold")
+        attention = ("Helvetica", 20, "bold")  # Define the font style for buttons
 
         # Add a label for the music playing tab
         ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10)
 
-        # State variables
-        is_sliding = {"value": False}  # Track whether the slider is moving
-        slider_timer = {"timer": None}  # Track the slider's timer
-        slider_state = {"current_width": 0}  # Track the slider's current position
-
-        # Function to handle play/pause button
-        def ply(pse_ply, file_path, is_sliding):
-            if pse_ply["text"] == "▶":  # If the button shows "play"
-                pse_ply["text"] = "⏸"  # Change to "pause"
-                is_sliding["value"] = True  # Set is_sliding to True
-                start_slider()  # Start the slider
-                print("Playing song")  # Debugging output
-            else:  # If the button shows "pause"
-                pse_ply["text"] = "▶"  # Change to "play"
-                is_sliding["value"] = False  # Set is_sliding to False
-                stop_slider()  # Stop the slider
-                print("Paused song")  # Debugging output
-
-        # Play/Pause button
-        pse_ply = tk.Button(
-            ply_sng,
-            text="▶",
-            command=lambda: ply(pse_ply, "Audio/normal sound effect.wav", is_sliding),
-            font=attention,
-        )
-        pse_ply.grid(row=1, column=1, padx=10, pady=10)
-
-        # Volume label and slider
+        # Volume slider and label
         volume_label = ttk.Label(ply_sng, text="Volume: 50%", font=("Helvetica", 14))
-        volume_label.grid(row=2, column=1, padx=10, pady=5)  # Centered in column 1
+        volume_label.grid(row=2, column=1, padx=10, pady=5)
 
         volume_slider = ttk.Scale(
             ply_sng,
@@ -183,14 +159,14 @@ def main(repeat):
             to=100,
             orient="horizontal",
             length=200,
-            command=lambda value: set_volume(volume_slider, volume_label),
+            command=lambda value: set_volume(value, volume_label),  # Calls set_volume from audio.py
         )
         volume_slider.set(50)
         volume_slider.grid(row=3, column=1, padx=10, pady=5)
 
         # Speed label and slider
         speed_label = ttk.Label(ply_sng, text="Speed: 1x", font=("Helvetica", 14))
-        speed_label.grid(row=4, column=1, padx=10, pady=5)  # Centered in column 1
+        speed_label.grid(row=4, column=1, padx=10, pady=5)
 
         speed_slider = ttk.Scale(
             ply_sng,
@@ -198,148 +174,101 @@ def main(repeat):
             to=2.0,
             orient="horizontal",
             length=200,
-            command=lambda value: change_speed(speed_slider, speed_label),
+            command=lambda value: from audio import change_speed; change_speed(value, speed_label),  # Calls change_speed function
         )
         speed_slider.set(1.0)
         speed_slider.grid(row=5, column=1, padx=10, pady=5)
 
-        def add_dynamic_slider_to_music_player(is_sliding, get_song_length, get_current_position, seek_to_position):
-            # Create a frame to hold the custom slider
-            slider_frame = tk.Frame(ply_sng, bg="white")  # White background
-            slider_frame.grid(row=6, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
+        # Custom slider for playback
+        canvas_width = 300
+        canvas_height = 20
+        canvas = tk.Canvas(ply_sng, width=canvas_width, height=canvas_height, bg="white", highlightthickness=0)
+        canvas.grid(row=6, column=1, padx=10, pady=10)
 
-            # Canvas for the custom slider
-            canvas_width = 300
-            canvas_height = 20
-            canvas = tk.Canvas(slider_frame, width=canvas_width, height=canvas_height, bg="white", highlightthickness=0)
-            canvas.pack()
+        # Create the lighter blue progress bar rectangle
+        blue_bar = canvas.create_rectangle(0, 0, 0, canvas_height, fill="lightblue", width=0)
 
-            # Create the lighter blue progress bar rectangle
-            blue_bar = canvas.create_rectangle(0, 0, 0, canvas_height, fill="lightblue", width=0)
+        # Create the slider handle (circle)
+        handle_radius = 10
+        handle = canvas.create_oval(
+            -handle_radius,
+            0,
+            handle_radius,
+            canvas_height,
+            fill="blue",
+            outline="",
+        )
 
-            # Create the slider handle (circle)
-            handle_radius = 10
-            handle = canvas.create_oval(
-                -handle_radius,
+        # Bind the slider to start, drag, and end events
+        def on_drag_start(event):
+            global is_playing
+            is_playing = False  # Pause playback while dragging
+
+        def on_drag(event):
+            # Calculate the new position of the slider based on the mouse position
+            new_width = max(0, min(event.x, canvas_width))
+            canvas.coords(blue_bar, 0, 0, new_width, canvas_height)
+            canvas.coords(
+                handle,
+                new_width - handle_radius,
                 0,
-                handle_radius,
+                new_width + handle_radius,
                 canvas_height,
-                fill="blue",
-                outline="",
             )
 
-            # State to track the slider's position and whether it's sliding
-            slider_state = {"current_width": 0, "timer": None, "is_dragging": False}
+        def on_drag_end(event):
+            global playback_position, sample_rate
+            is_playing = True  # Resume playback
+            # Calculate the new playback position based on the slider's position
+            song_length = get_song_length()  # Calls get_song_length from audio.py
+            if song_length > 0:
+                new_position = (canvas.coords(blue_bar)[2] / canvas_width) * song_length
+                playback_position = int(new_position * sample_rate)  # Update playback position in samples
 
-            # Function to update the slider position
-            def update_slider():
-                if is_sliding["value"] and not slider_state["is_dragging"]:  # Only update if the slider is moving and not being dragged
-                    song_length = get_song_length()  # Get the total length of the song in seconds
-                    current_position = get_current_position()  # Get the current playback position in seconds
-                    print(f"Current position: {current_position:.2f} seconds")  # Print the current position for testing
-                    print(f"DEBUG: Song length from get_song_length(): {song_length}")
+        canvas.bind("<Button-1>", on_drag_start)  # Start dragging on click
+        canvas.bind("<B1-Motion>", on_drag)  # Drag while holding the mouse button
+        canvas.bind("<ButtonRelease-1>", on_drag_end)  # Stop dragging on release
 
-                    if song_length > 0:
-                        # Calculate the slider's position based on the current playback position
-                        slider_state["current_width"] = (current_position / song_length) * canvas_width
+        # Play/Pause button
+        pse_ply = tk.Button(
+            ply_sng,
+            text="▶️",
+            command=lambda: toggle_play_pause(pse_ply),
+            font=attention,
+        )
+        pse_ply.grid(row=1, column=1, padx=10, pady=10)
 
-                        # Ensure the slider doesn't exceed the canvas width
-                        slider_state["current_width"] = min(slider_state["current_width"], canvas_width)
+        # Mock function to toggle play/pause
+        def toggle_play_pause(button):
+            global is_playing
+            if button["text"] == "▶️":
+                is_playing = True
+            else:
+                is_playing = False
 
-                        # Update the slider's position visually
-                        canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
-                        canvas.coords(
-                            handle,
-                            slider_state["current_width"] - handle_radius,
-                            0,
-                            slider_state["current_width"] + handle_radius,
-                            canvas_height,
-                        )
-                        print(f"Slider position: {slider_state['current_width']:.2f} pixels")  # Print the slider position for testing
+        # Mock function to set volume
+        def set_volume(value, label):
+            label.config(text=f"Volume: {int(float(value))}%")
+            print(f"Volume set to {int(float(value))}%")  # Debugging output
 
-                    # Schedule the next update
-                    slider_state["timer"] = ply_sng.after(1000, update_slider)  # Update every 500ms
-                else:
-                    # Stop the timer if the slider is not sliding
-                    stop_slider()
+        # Mock function to change speed
+        def change_speed(value, label):
+            try:
+                current_speed = round(float(value), 1)  # Ensure value is converted to a float
+                label.config(text=f"Speed: {current_speed}x")
+                print(f"Playback speed set to {current_speed}x")  # Debugging output
+            except Exception as e:
+                print(f"Error changing speed: {e}")
 
-            # Function to stop the slider
-            def stop_slider():
-                is_sliding["value"] = False
-                if slider_state["timer"]:
-                    ply_sng.after_cancel(slider_state["timer"])  # Cancel the timer
-                    slider_state["timer"] = None
-
-            # Function to reset the slider
-            def reset_slider():
-                stop_slider()
-                slider_state["current_width"] = 0
-                canvas.coords(blue_bar, 0, 0, 0, canvas_height)
-                canvas.coords(
-                    handle,
-                    -handle_radius,
-                    0,
-                    handle_radius,
-                    canvas_height,
-                )
-
-            # Function to handle manual dragging of the slider
-            def on_drag_start(event):
-                slider_state["is_dragging"] = True
-
-            def on_drag(event):
-                # Calculate the new position of the slider based on the mouse position
-                new_width = max(0, min(event.x, canvas_width))
-                slider_state["current_width"] = new_width
-
-                # Update the slider's position visually
-                canvas.coords(blue_bar, 0, 0, slider_state["current_width"], canvas_height)
-                canvas.coords(
-                    handle,
-                    slider_state["current_width"] - handle_radius,
-                    0,
-                    slider_state["current_width"] + handle_radius,
-                    canvas_height,
-                )
-
-            def on_drag_end(event):
-                slider_state["is_dragging"] = False
-
-                # Calculate the new playback position based on the slider's position
-                song_length = get_song_length()
-                if song_length > 0:
-                    new_position = (slider_state["current_width"] / canvas_width) * song_length
-                    seek_to_position(new_position)  # Seek to the new position in the song
-
-            # Bind the slider to start, drag, and end events
-            canvas.bind("<Button-1>", on_drag_start)  # Start dragging on click
-            canvas.bind("<B1-Motion>", on_drag)  # Drag while holding the mouse button
-            canvas.bind("<ButtonRelease-1>", on_drag_end)  # Stop dragging on release
-
-
-        import random
-
-        # Mock function to get a random song length
+        # Mock function to get song length
         def get_song_length():
-            return 180  # Random length between 1 and 5 minutes
+            return 180  # Example: 3 minutes
 
-        global current_position
-        current_position = 0
-
-        def get_current_position():
-            global current_position
-            current_position += 1  # Increment by 1 second
-            return current_position
-
-        # Mock function to simulate seeking to a position
-        def seek_to_position(position):
-            print(f"Seeking to position: {position:.2f} seconds")  # Print the seek position for testing
-
-        # Mock `is_sliding` state
-        is_sliding = {"value": False}
-
-        # Call the function to add the slider with mocked functions
-        add_dynamic_slider_to_music_player(is_sliding, get_song_length, get_current_position, seek_to_position)
+        # Mock global variables for playback
+        global is_playing, playback_position, sample_rate
+        is_playing = False
+        playback_position = 0
+        sample_rate = 44100  # Example: 44.1 kHz
 
 
     def create_plylst(root):
