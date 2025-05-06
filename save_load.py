@@ -132,3 +132,19 @@ def list_songs(csv):
         song_list.append([songs['name'][i],songs['path'][i]])
 
     return song_list
+
+
+#functoin to make a list of indexes of songs in a playlist compared to all songs
+def song_index(csv, playlists, name):
+    all_songs = list_songs(csv)
+    search_songs = playlist_songs(playlists, name)
+    song_indexes = []
+    for search in search_songs:
+        #test each song and add its index to the list
+        for ind, test in enumerate(all_songs):
+            if search == test:
+                song_indexes.append(ind)
+
+    return song_indexes
+
+

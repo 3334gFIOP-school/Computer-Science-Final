@@ -352,8 +352,8 @@ def main(repeat):
 
         def slct_sngs():
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
-            if nme.get() not in playlists:
-                playlists[nme.get()] = []
+            if nme.get() in playlists:
+                nme.get() = 'e'
             clear_frame(plylst)
             root.geometry("")
             options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
@@ -388,8 +388,9 @@ def main(repeat):
             root.geometry("")
             nme = option[nme[0]]
 
-            options = playlist_songs(playlists, nme) #Figure out how to integrate this later ===========================================================
-            preselected_indices = [0, 2]  # Integrate this with everything else ###################################################################################
+            print(playlist_songs(playlists, nme))
+            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
+            preselected_indices = song_index('songs.csv', playlists, nme)  # Integrate this with everything else ###################################################################################
 
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme, preselected_indices)
