@@ -167,7 +167,7 @@ def main(repeat):
         pse_ply = tk.Button(
             ply_sng,
             text="▶",
-            command=lambda: ply(pse_ply, "Audio/normal sound effect.wav", is_sliding),
+            command=lambda: ply(pse_ply, "Audio/Elektronomia - Summersong.wav", is_sliding),
             font=attention,
         )
         pse_ply.grid(row=2, column=1, padx=10, pady=10)

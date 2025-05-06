@@ -32,6 +32,10 @@ def play_song(play_button, file_path):  # Play or pause the song
             audio_data = data
             print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
 
+        # Reset position if song already finished
+        if playback_position >= len(audio_data):
+            playback_position = 0
+
         def audio_callback(outdata, frames, time, status):
             global playback_position, is_playing
 
@@ -43,14 +47,14 @@ def play_song(play_button, file_path):  # Play or pause the song
 
             for i in range(frames):
                 pos = int(playback_position)
+                if pos >= len(audio_data):  # End of song
+                    is_playing = False
+                    raise sd.CallbackStop()
+
                 next_pos = min(pos + 1, len(audio_data) - 1)
                 fraction = playback_position - pos
 
-                if pos >= len(audio_data): # Make sure that it works
-                    is_playing = False
-                    break
-
-                if channels == 1: #  Mono audio
+                if channels == 1:  # Mono audio
                     sample = (1 - fraction) * audio_data[pos] + fraction * audio_data[next_pos]
                     output[i] = sample * volume
                 else:
@@ -63,17 +67,19 @@ def play_song(play_button, file_path):  # Play or pause the song
             if len(output) < frames:
                 outdata[len(output):] = 0
 
-        def playback_thread_func():
+        def playback_thread_func(play_button):
             global is_playing
             channels = 2 if audio_data.ndim > 1 else 1
-            with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=audio_callback):
-                while is_playing:
-                    sd.sleep(100)
+            try:
+                with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=audio_callback):
+                    while is_playing:
+                        sd.sleep(100)
+            finally:
+                play_button.config(text="▶", font=("Helvetica", 20, "bold"))
 
         if play_button["text"] == "▶":
             is_playing = True
-            # Do not reset playback_position here
-            playback_thread = threading.Thread(target=playback_thread_func)
+            playback_thread = threading.Thread(target=playback_thread_func, args=(play_button,))
             playback_thread.start()
             play_button.config(text="⏸", font=("Helvetica", 20, "bold"))
             print("Playing song")
@@ -84,6 +90,8 @@ def play_song(play_button, file_path):  # Play or pause the song
 
     except Exception as err:
         print(f"Error playing song: {err}")
+
+
 
 
 def stop_song(): # Stops the song
