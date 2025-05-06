@@ -62,6 +62,7 @@ def main(repeat):
                 playlists[export[0]].append(i)
 
             print(playlists)
+            print(playlists_to_songs(playlists))
 #            playlists_to_save(playlists, 'songs.csv')
 
             
