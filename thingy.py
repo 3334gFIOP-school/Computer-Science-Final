@@ -44,7 +44,6 @@ def start_auto_clicker():
 
         # Run the auto clicker in a separate thread
         threading.Thread(target=auto_clicker, daemon=True).start()
-        messagebox.showinfo("Info", "Auto clicker started! Use the keys to control it.")
     except ValueError:
         messagebox.showerror("Error", "Wait time must be a valid number!")
 
