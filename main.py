@@ -148,8 +148,35 @@ def main(repeat):
 
         # Add a label for the music playing tab
         ttk.Label(ply_sng, text="Music Playing Tab").grid(row=0, column=1, padx=10, pady=10)
+        
+        # State variables
+        is_sliding = {"value": False}  # Track whether the slider is moving
+        slider_timer = {"timer": None}  # Track the slider's timer
+        slider_state = {"current_width": 0}  # Track the slider's current position
 
-        # Volume slider and label
+        # Function to handle play/pause button
+        def ply(pse_ply, file_path, is_sliding):
+            if pse_ply["text"] == "▶":  # If the button shows "play"
+                pse_ply["text"] = "⏸"  # Change to "pause"
+                is_sliding["value"] = True  # Set is_sliding to True
+                start_slider()  # Start the slider
+                print("Playing song")  # Debugging output
+            else:  # If the button shows "pause"
+                pse_ply["text"] = "▶"  # Change to "play"
+                is_sliding["value"] = False  # Set is_sliding to False
+                stop_slider()  # Stop the slider
+                print("Paused song")  # Debugging output
+
+        # Play/Pause button
+        pse_ply = tk.Button(
+            ply_sng,
+            text="▶",
+            command=lambda: ply(pse_ply, "Audio/Elektronomia - Summersong.wav", is_sliding),
+            font=attention,
+        )
+        pse_ply.grid(row=1, column=1, padx=10, pady=10)
+
+        # Volume label and slider
         volume_label = ttk.Label(ply_sng, text="Volume: 50%", font=("Helvetica", 14))
         volume_label.grid(row=2, column=1, padx=10, pady=5)
 
@@ -277,6 +304,8 @@ def main(repeat):
 
         def slct_sngs():
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
+            if nme.get() in playlists:
+                nme.get() = 'e'
             clear_frame(plylst)
             root.geometry("")
             options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
@@ -284,7 +313,7 @@ def main(repeat):
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme.get())
             listbox.pack(padx=10, pady=10, fill='both', expand=True)
-
+            
             # Add a button to clear selected items
             clear_button = tk.Button(plylst, text="Clear selection", command=listbox.clear_selection)
             clear_button.pack(pady=10)
@@ -311,8 +340,9 @@ def main(repeat):
             root.geometry("")
             nme = option[nme[0]]
 
-            options = playlist_songs(playlists, nme) #Figure out how to integrate this later ===========================================================
-            preselected_indices = [0, 2]  # Integrate this with everything else ###################################################################################
+            print(playlist_songs(playlists, nme))
+            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
+            preselected_indices = song_index('songs.csv', playlists, nme)  # Integrate this with everything else ###################################################################################
 
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme, preselected_indices)
