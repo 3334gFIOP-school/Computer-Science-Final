@@ -1,7 +1,7 @@
 # Sawyer Wood
 
 from save_load import load_to_playlists as load
-from save_load import songs_to_save as save
+from save_load import playlists_to_save as save
 
 # Check if a song exists in a playlist
 def song_exists(playlist, song_name):
