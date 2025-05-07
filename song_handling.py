@@ -1,5 +1,7 @@
 # Sawyer Wood
 
+import random
+
 from save_load import load_to_playlists as load
 from save_load import playlists_to_save as save
 
@@ -93,3 +95,19 @@ def remove_playlist(playlists):
         print("Playlist does not exist")
         playlists = remove_playlist(playlists)  # Retry removing the playlist
         return playlists
+
+def next_song_in_playlist(current_playlist, current_song_name):
+    x = 0
+    for song in current_playlist:
+        x += 1
+        if song[0] == current_song_name:
+            return current_playlist[x][1]  # Return the next song in the playlist's file path
+        
+def next_shuffled_song(current_playlist, current_song_name):
+    random_song = random.choice(current_playlist)
+
+    if random_song[0] != current_song_name:
+        return random_song[1]  # Return the file path of the random song
+    else:
+        return next_shuffled_song(current_playlist, current_song_name)
+        
