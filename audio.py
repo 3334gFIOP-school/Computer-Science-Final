@@ -16,10 +16,11 @@ sample_rate = None
 playback_thread = None
 playback_position = 0
 volume = 1.0  # Default volume 100%
-step = 1 # This fixes the broken 0.5x speed, DO NOT TOUCH
+step = 1  # This fixes the broken 0.5x speed, DO NOT TOUCH
+next_song_path = None  # Path to the next song to queue after current finishes
 
 def play_song(play_button, file_path):  # Play or pause the song
-    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
+    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path
     try:
         if audio_data is None or sample_rate is None:
             sample_rate, data = read(file_path)
@@ -32,6 +33,10 @@ def play_song(play_button, file_path):  # Play or pause the song
             audio_data = data
             print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
 
+        # Reset position if song already finished
+        if playback_position >= len(audio_data):
+            playback_position = 0
+
         def audio_callback(outdata, frames, time, status):
             global playback_position, is_playing
 
@@ -43,14 +48,15 @@ def play_song(play_button, file_path):  # Play or pause the song
 
             for i in range(frames):
                 pos = int(playback_position)
+                if pos >= len(audio_data):  # End of song
+                    print("Song Ended") # SONG ENDS HERERERERERERERERERERERE ================================================================================================================
+                    is_playing = False
+                    raise sd.CallbackStop()
+
                 next_pos = min(pos + 1, len(audio_data) - 1)
                 fraction = playback_position - pos
 
-                if pos >= len(audio_data): # Make sure that it works
-                    is_playing = False
-                    break
-
-                if channels == 1: #  Mono audio
+                if channels == 1:  # Mono audio
                     sample = (1 - fraction) * audio_data[pos] + fraction * audio_data[next_pos]
                     output[i] = sample * volume
                 else:
@@ -63,17 +69,24 @@ def play_song(play_button, file_path):  # Play or pause the song
             if len(output) < frames:
                 outdata[len(output):] = 0
 
-        def playback_thread_func():
-            global is_playing
+        def playback_thread_func(play_button):
+            global is_playing, next_song_path
             channels = 2 if audio_data.ndim > 1 else 1
-            with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=audio_callback):
-                while is_playing:
-                    sd.sleep(100)
+            try:
+                with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=audio_callback):
+                    while is_playing:
+                        sd.sleep(100)
+            finally:
+                play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+                if next_song_path:
+                    path = next_song_path
+                    next_song_path = None
+                    stop_song()  # Clear old state before next song
+                    play_song(play_button, path)
 
         if play_button["text"] == "▶️":
             is_playing = True
-            # Do not reset playback_position here
-            playback_thread = threading.Thread(target=playback_thread_func)
+            playback_thread = threading.Thread(target=playback_thread_func, args=(play_button,))
             playback_thread.start()
             play_button.config(text="⏸", font=("Helvetica", 20, "bold"))
             print("Playing song")
@@ -86,8 +99,14 @@ def play_song(play_button, file_path):  # Play or pause the song
         print(f"Error playing song: {err}")
 
 
-def stop_song(): # Stops the song
-    global is_playing,current_speed, audio_data, sample_rate, playback_thread, playback_position,volume
+def play_next_song(file_path):  # Queues a song to play after the current one ends
+    global next_song_path
+    next_song_path = file_path
+    print(f"Next song queued: {file_path}")
+
+
+def stop_song():  # Stops the song
+    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
     is_playing = False
     current_speed = 1.0
     audio_data = None
@@ -106,13 +125,14 @@ def set_volume(value, label):
     except Exception as e:
         print(f"Error setting volume: {e}")
 
-def change_speed(value, label):  # Changes the speed
+def change_speed(speed_slider, speed_label):  # Changes the speed
     global current_speed
-    current_speed = round(float(value), 1)  # Convert value to float and round it
-    label.config(text=f"Speed: {current_speed}x")
+    current_speed = round(float(speed_slider), 1)  # Convert value to float and round it
+    speed_label.config(text=f"Speed: {current_speed}x")
     print(f"Playback speed changed to {current_speed}x")
 
-def create_replay_button(root, play_button, file_path): # Replay button
+
+def create_replay_button(root, play_button, file_path):  # Replay button
     def replay_song():
         stop_song()
         play_button.config(text="▶️", font=("Helvetica", 20, "bold"))
@@ -120,20 +140,9 @@ def create_replay_button(root, play_button, file_path): # Replay button
     replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
     replay_button.pack()
 
-def get_song_length(): # Gets the song length in seconds
-    """Returns the length of the song in seconds."""
+
+def get_song_length():  # Gets the song length in seconds
     if audio_data is not None and sample_rate is not None:
-        length_in_seconds = len(audio_data) / sample_rate # Gets the song length seconds
-        return length_in_seconds
+        return len(audio_data) / sample_rate
     else:
-        return 0  # Return 0 if audio data or sample rate is not available
-    
-def next_song(): # play next song
-    global current_song
-    temp_songlist = load_to_playlists("songs.csv")
-    for x in temp_songlist:
-        print(f'{x}\n{temp_songlist[x]}')
-        for y in x:
-            if temp_songlist[x][y] == current_song:
-                next_song = temp_songlist[x][y+1]
-                return next_song
+        return 0
