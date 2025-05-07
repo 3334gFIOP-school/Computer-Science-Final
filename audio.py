@@ -143,9 +143,9 @@ def create_replay_button(root, play_button, file_path):  # Replay button
 
 
 def get_song_length(file_path):  # Gets the song length in seconds using file path
-try:
-    sample_rate, data = read(file_path)
-    return len(data) / sample_rate
-except Exception as e:
-    print(f"Error getting song length: {e}")
-    return 0
+    try:
+        sample_rate, data = read(file_path)
+        return len(data) / sample_rate
+    except Exception as e:
+        print(f"Error getting song length: {e}")
+        return 0
