@@ -116,17 +116,19 @@ def stop_song():  # Stops the song
     volume = 1.0  # Default volume 100%
     print("Stopped song")
 
-
-def set_volume(volume_slider, volume_label):  # Sets the volume
-    global volume
-    volume = round((volume_slider.get() / 100), 2)
-    volume_label.config(text=f"Volume: {int(volume * 100)}%")
-    print(f"Volume set to {int(volume * 100)}%")
+def set_volume(value, label):
+    try:
+        global volume
+        volume = round(float(value), 2)  # Convert the slider value (string) to a float
+        label.config(text=f"Volume: {int(volume)}%")  # Update the label text
+        print(f"Volume set to {int(volume)}%")  # Debugging output
+    except Exception as e:
+        print(f"Error setting volume: {e}")
 
 def change_speed(speed_slider, speed_label):  # Changes the speed
     global current_speed
-    current_speed = round(float(value), 1)  # Convert value to float and round it
-    label.config(text=f"Speed: {current_speed}x")
+    current_speed = round(float(speed_slider), 1)  # Convert value to float and round it
+    speed_label.config(text=f"Speed: {current_speed}x")
     print(f"Playback speed changed to {current_speed}x")
 
 

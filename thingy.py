@@ -26,7 +26,7 @@ def start_auto_clicker():
                 # Check if the activation key is pressed
                 if keyboard.is_pressed(activation_key):
                     while True:
-                        # Perform the mouse click
+                        # Perform the mouse clicke
                         mouse.click()
                         time.sleep(wait_time)
 
