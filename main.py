@@ -113,7 +113,7 @@ def main(repeat):
             nme = lstbox.curselection()
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
-            pop_audio(root, ply)
+            pop_audio(root, ply, "Audio\\alarm.wav")
         options = playlist_names(playlists) #Integrate this with everything else ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
@@ -138,8 +138,19 @@ def main(repeat):
         ttk.Button(ply_sng, text="Pick playlist", command=pck).pack()
     pick_plylst(root)
 
-    def pop_audio(root, ply):
+    def pop_audio(root, ply, file_path):
         from audio import play_song, stop_song, set_volume, get_song_length
+
+        def update_slider(slider, label):
+            global is_playing, playback_position
+
+            if is_playing:
+                playback_position += 1  # Increment playback position by 1 second
+                slider.set(playback_position)  # Update the slider's position
+                label.config(text=f"Position: {playback_position}s")  # Update the label with the current position
+
+                # Schedule the function to run again after 1 second
+                slider.after(1000, update_slider, slider, label)
 
         ply = False
         root.geometry("")
@@ -168,83 +179,56 @@ def main(repeat):
         speed_label = ttk.Label(ply_sng, text="Speed: 1x", font=("Helvetica", 14))
         speed_label.grid(row=4, column=1, padx=10, pady=5)
 
+        from audio import change_speed  # Import change_speed from audio.py
         speed_slider = ttk.Scale(
             ply_sng,
             from_=0.5,
             to=2.0,
             orient="horizontal",
             length=200,
-            command=lambda value: from audio import change_speed; change_speed(value, speed_label),  # Calls change_speed function
+            command=lambda value: change_speed(value, speed_label),  # Calls change_speed function
         )
         speed_slider.set(1.0)
         speed_slider.grid(row=5, column=1, padx=10, pady=5)
 
-        # Custom slider for playback
-        canvas_width = 300
-        canvas_height = 20
-        canvas = tk.Canvas(ply_sng, width=canvas_width, height=canvas_height, bg="white", highlightthickness=0)
-        canvas.grid(row=6, column=1, padx=10, pady=10)
+        # Playback position slider and label
+        playback_label = ttk.Label(ply_sng, text="Position: 0s", font=("Helvetica", 14))
+        playback_label.grid(row=6, column=1, padx=10, pady=5)
 
-        # Create the lighter blue progress bar rectangle
-        blue_bar = canvas.create_rectangle(0, 0, 0, canvas_height, fill="lightblue", width=0)
-
-        # Create the slider handle (circle)
-        handle_radius = 10
-        handle = canvas.create_oval(
-            -handle_radius,
-            0,
-            handle_radius,
-            canvas_height,
-            fill="blue",
-            outline="",
+        playback_slider = ttk.Scale(
+            ply_sng,
+            from_=0,
+            to=get_song_length(file_path),  # Set the maximum value to the song length
+            orient="horizontal",
+            length=300,
         )
+        playback_slider.grid(row=7, column=1, padx=10, pady=10)
 
-        # Bind the slider to start, drag, and end events
-        def on_drag_start(event):
-            global is_playing
-            is_playing = False  # Pause playback while dragging
-
-        def on_drag(event):
-            # Calculate the new position of the slider based on the mouse position
-            new_width = max(0, min(event.x, canvas_width))
-            canvas.coords(blue_bar, 0, 0, new_width, canvas_height)
-            canvas.coords(
-                handle,
-                new_width - handle_radius,
-                0,
-                new_width + handle_radius,
-                canvas_height,
-            )
-
-        def on_drag_end(event):
-            global playback_position, sample_rate
-            is_playing = True  # Resume playback
-            # Calculate the new playback position based on the slider's position
-            song_length = get_song_length()  # Calls get_song_length from audio.py
-            if song_length > 0:
-                new_position = (canvas.coords(blue_bar)[2] / canvas_width) * song_length
-                playback_position = int(new_position * sample_rate)  # Update playback position in samples
-
-        canvas.bind("<Button-1>", on_drag_start)  # Start dragging on click
-        canvas.bind("<B1-Motion>", on_drag)  # Drag while holding the mouse button
-        canvas.bind("<ButtonRelease-1>", on_drag_end)  # Stop dragging on release
+        # Start updating the slider when playback starts
+        total_length = get_song_length(file_path)  # Get the total length of the song
+        update_slider(playback_slider, playback_label)
 
         # Play/Pause button
         pse_ply = tk.Button(
             ply_sng,
             text="▶️",
-            command=lambda: toggle_play_pause(pse_ply),
+            command=lambda: toggle_play_pause(pse_ply, file_path),
             font=attention,
         )
         pse_ply.grid(row=1, column=1, padx=10, pady=10)
 
-        # Mock function to toggle play/pause
-        def toggle_play_pause(button):
+        # Toggle play/pause functionality
+        def toggle_play_pause(button, file_path):
             global is_playing
             if button["text"] == "▶️":
                 is_playing = True
+                button["text"] = "⏸"
+                play_song(button, file_path)
+                update_slider(playback_slider, playback_label)  # Pass the slider and label
             else:
                 is_playing = False
+                button["text"] = "▶️"
+                play_song(button, file_path)
 
         # Mock function to set volume
         def set_volume(value, label):
@@ -261,7 +245,7 @@ def main(repeat):
                 print(f"Error changing speed: {e}")
 
         # Mock function to get song length
-        def get_song_length():
+        def get_song_length(file_path=None):
             return 180  # Example: 3 minutes
 
         # Mock global variables for playback
