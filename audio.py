@@ -18,9 +18,16 @@ playback_position = 0
 volume = 1.0  # Default volume 100%
 step = 1  # This fixes the broken 0.5x speed, DO NOT TOUCH
 next_song_path = None  # Path to the next song to queue after current finishes
+stop_bar2 = False
+
+def stop_bar1():
+    global stop_bar2
+    if stop_bar2 == True:
+        return False
+
 
 def play_song(play_button, file_path):  # Play or pause the song
-    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path
+    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path,stop_bar2
     try:
         if audio_data is None or sample_rate is None:
             sample_rate, data = read(file_path)
@@ -41,6 +48,7 @@ def play_song(play_button, file_path):  # Play or pause the song
             global playback_position, is_playing
 
             if not is_playing:
+                stop_bar2 = True
                 raise sd.CallbackStop()
 
             channels = 2 if audio_data.ndim > 1 else 1
@@ -50,6 +58,7 @@ def play_song(play_button, file_path):  # Play or pause the song
                 pos = int(playback_position)
                 if pos >= len(audio_data):  # End of song
                     print("Song Ended") # SONG ENDS HERERERERERERERERERERERE ================================================================================================================
+                    stop_bar2 = True
                     is_playing = False
                     raise sd.CallbackStop()
 
@@ -139,8 +148,6 @@ def create_replay_button(root, play_button, file_path):  # Replay button
         play_song(play_button, file_path)
     replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
     replay_button.pack()
-
-
 
 def get_song_length(file_path):  # Gets the song length in seconds using file path
     try:
