@@ -56,7 +56,7 @@ def playlists_to_songs(playlists):
     #add songs
     for ind, playlist_list in enumerate(playlists.values()):
         for i, song in enumerate(playlist_list):
-            if song[0] not in songs['path'].values():
+            if song[0] not in songs['name'].values():
                 songs['path'][i+ind] = song[1]
                 songs['name'][i+ind] = song[0]
                 songs['playlists'][i+ind] = []
@@ -146,5 +146,3 @@ def song_index(csv, playlists, name):
                 song_indexes.append(ind)
 
     return song_indexes
-
-
