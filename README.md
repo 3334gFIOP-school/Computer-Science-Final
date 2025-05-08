@@ -2,7 +2,7 @@
 
 ## Project Description  
 ---
-This is our final team project for Computer Science 2! It plays songs.  
+This is our final team project for Computer Science 2! It plays songs. You can create your own playlists with your own songs!  
 
 ## Installation  
 ---
@@ -46,7 +46,7 @@ Not used for this class.
 
 ## Contributors  
 ---
-+ Copilot - Helping with using libraries and debugging  
++ Copilot - Helping with using libraries and debugging, a LOT OF DEBUGGING  
 + Person who helped 2 - what they did  
 + Person who helped 3 - what they did  
 + Person who helped 4 - what they did  
