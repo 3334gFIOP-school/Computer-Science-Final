@@ -307,7 +307,7 @@ def main(repeat):
             nme = option[nme[0]]
 
             options = playlist_songs(playlists, nme) #Figure out how to integrate this later ===========================================================
-            preselected_indices = [0, 2]  # Integrate this with everything else ###################################################################################
+            preselected_indices = song_index('songs.csv', playlists, nme)  # Integrate this with everything else ###################################################################################
 
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme, preselected_indices)
