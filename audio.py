@@ -140,8 +140,6 @@ def create_replay_button(root, play_button, file_path):  # Replay button
     replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
     replay_button.pack()
 
-
-
 def get_song_length(file_path):  # Gets the song length in seconds using file path
     try:
         sample_rate, data = read(file_path)
