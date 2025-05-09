@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from audio import *
-print(set_volume)
 from save_load import *
 import time
 
