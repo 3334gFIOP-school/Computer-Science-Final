@@ -3,7 +3,10 @@ import sounddevice as sd
 import numpy as np
 from scipy.io.wavfile import read
 import threading
-
+# COMMENTS HERE
+#1
+#
+#
 # Global variables
 is_playing = False
 current_speed = 1.0
@@ -30,7 +33,7 @@ def change_speed(speed_slider, speed_label):  # Changes the speed
 
 # Function to play the song
 def play_song(play_button, file_path):  # Play or pause the song
-    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path, stop_bar2
+    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path
     try:
         if audio_data is None or sample_rate is None:
             sample_rate, data = read(file_path)
@@ -95,15 +98,15 @@ def play_song(play_button, file_path):  # Play or pause the song
                     stop_song()  # Clear old state before next song
                     play_song(play_button, path)
 
-        if play_button["text"] == "▶️":
+        if play_button["text"] == "▶":
             is_playing = True
             playback_thread = threading.Thread(target=playback_thread_func, args=(play_button,))
             playback_thread.start()
-            play_button.config(text="⏸", font=("Helvetica", 20, "bold"))
+            play_button.config(text="▐▐", font=("Helvetica", 20, "bold"))
             print("Playing song")
         else:
             is_playing = False  # Pause only (retain position)
-            play_button.config(text="▶️", font=("Helvetica", 20, "bold"))
+            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
             print("Paused song")
 
     except Exception as err:

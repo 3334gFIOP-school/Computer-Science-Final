@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from audio import *
-print(set_volume)
 from save_load import *
 import time
 
@@ -151,17 +150,17 @@ def main(repeat):
     def pop_audio(root, ply, file_path):
         from audio import play_song, stop_song, set_volume, get_song_length
 
-        def update_slider(slider, label):
-            global is_playing, playback_position
+        def update_progress_bar(progress, label, total_length):
+            global playback_position, is_playing
 
             if is_playing:
-                if not playback_position >= song_length:
-                    playback_position += 1  # Increment playback position by 1 second
-                slider.set(playback_position)  # Update the slider's position
+                playback_position += 1  # Increment playback position by 1 second
+                progress["value"] = (playback_position / total_length) * 100  # Update progress bar
                 label.config(text=f"Position: {playback_position}s")  # Update the label with the current position
 
                 # Schedule the function to run again after 1 second
-                slider.after(1000, update_slider, slider, label) # HERE =========================================================================================================================
+                if playback_position < total_length:
+                    progress.after(1000, update_progress_bar, progress, label, total_length)
 
         ply = False
         root.geometry("")
@@ -202,27 +201,31 @@ def main(repeat):
         speed_slider.set(1.0)
         speed_slider.grid(row=5, column=1, padx=10, pady=5)
 
-        # Playback position slider and label
+        # Playback position progress bar and label
         playback_label = ttk.Label(ply_sng, text="Position: 0s", font=("Helvetica", 14))
         playback_label.grid(row=6, column=1, padx=10, pady=5)
-        song_length = get_song_length(file_path)  # Get the total length of the song
-        playback_slider = ttk.Scale(
+
+        # Create a blue progress bar for playback position
+        style = ttk.Style()
+        style.configure("blue.Horizontal.TProgressbar", troughcolor="white", background="blue")
+
+        playback_progress = ttk.Progressbar(
             ply_sng,
-            from_=0,
-            to=song_length,  # Set the maximum value to the song length
             orient="horizontal",
             length=300,
+            mode="determinate",
+            style="blue.Horizontal.TProgressbar",  # Use the custom blue style
         )
-        playback_slider.grid(row=7, column=1, padx=10, pady=10)
+        playback_progress.grid(row=7, column=1, padx=10, pady=10)
 
-        # Start updating the slider when playback starts
+        # Start updating the progress bar when playback starts
         total_length = get_song_length(file_path)  # Get the total length of the song
-        update_slider(playback_slider, playback_label)
+        update_progress_bar(playback_progress, playback_label, total_length)
 
         # Play/Pause button
         pse_ply = tk.Button(
             ply_sng,
-            text="▶️",
+            text="▶",
             command=lambda: toggle_play_pause(pse_ply, file_path),
             font=attention,
         )
@@ -231,14 +234,13 @@ def main(repeat):
         # Toggle play/pause functionality
         def toggle_play_pause(button, file_path):
             global is_playing
-            if button["text"] == "▶️":
+            print(f"Button clicked: {button['text']}")  # Debugging: Print the button text
+            if button["text"] == "▶":
                 is_playing = True
-                button["text"] = "⏸"
                 play_song(button, file_path)
-                update_slider(playback_slider, playback_label)  # Pass the slider and label
+                update_progress_bar(playback_progress, playback_label, total_length)  # Pass the progress bar and label
             else:
                 is_playing = False
-                button["text"] = "▶️"
                 play_song(button, file_path)
 
         # Mock function to set volume
@@ -356,12 +358,7 @@ def main(repeat):
             clear_frame(plylst)
             # populate box ############################################################################################
             pop_plylst()
-            
-            #remove selected playlist
-            playlists.pop(playlist_names(playlists)[nme[0]])
-            playlists_to_save(playlists, 'songs.csv')
-
-        options = playlist_names(playlists) #get playlist names ###################################################################################
+        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
