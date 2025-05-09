@@ -123,7 +123,7 @@ def main(repeat):
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
             pop_audio(root, ply, "Audio\\alarm.wav")
-        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################            EEEEEEEEEEEEEEEE
+        options = playlist_names(playlists) #get playlist names ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(ply_sng, orient='vertical')
@@ -150,17 +150,17 @@ def main(repeat):
     def pop_audio(root, ply, file_path):
         from audio import play_song, stop_song, set_volume, get_song_length
 
-        def update_slider(slider, label):
-            global is_playing, playback_position
+        def update_progress_bar(progress, label, total_length):
+            global playback_position, is_playing
 
             if is_playing:
-                if not playback_position >= song_length:
-                    playback_position += 1  # Increment playback position by 1 second
-                slider.set(playback_position)  # Update the slider's position
+                playback_position += 1  # Increment playback position by 1 second
+                progress["value"] = (playback_position / total_length) * 100  # Update progress bar
                 label.config(text=f"Position: {playback_position}s")  # Update the label with the current position
 
                 # Schedule the function to run again after 1 second
-                slider.after(1000, update_slider, slider, label) # HERE =========================================================================================================================
+                if playback_position < total_length:
+                    progress.after(1000, update_progress_bar, progress, label, total_length)
 
         ply = False
         root.geometry("")
@@ -201,27 +201,31 @@ def main(repeat):
         speed_slider.set(1.0)
         speed_slider.grid(row=5, column=1, padx=10, pady=5)
 
-        # Playback position slider and label
+        # Playback position progress bar and label
         playback_label = ttk.Label(ply_sng, text="Position: 0s", font=("Helvetica", 14))
         playback_label.grid(row=6, column=1, padx=10, pady=5)
-        song_length = get_song_length(file_path)  # Get the total length of the song
-        playback_slider = ttk.Scale(
+
+        # Create a blue progress bar for playback position
+        style = ttk.Style()
+        style.configure("blue.Horizontal.TProgressbar", troughcolor="white", background="blue")
+
+        playback_progress = ttk.Progressbar(
             ply_sng,
-            from_=0,
-            to=song_length,  # Set the maximum value to the song length
             orient="horizontal",
             length=300,
+            mode="determinate",
+            style="blue.Horizontal.TProgressbar",  # Use the custom blue style
         )
-        playback_slider.grid(row=7, column=1, padx=10, pady=10)
+        playback_progress.grid(row=7, column=1, padx=10, pady=10)
 
-        # Start updating the slider when playback starts
+        # Start updating the progress bar when playback starts
         total_length = get_song_length(file_path)  # Get the total length of the song
-        update_slider(playback_slider, playback_label)
+        update_progress_bar(playback_progress, playback_label, total_length)
 
         # Play/Pause button
         pse_ply = tk.Button(
             ply_sng,
-            text="▶️",
+            text="▶",
             command=lambda: toggle_play_pause(pse_ply, file_path),
             font=attention,
         )
@@ -230,14 +234,13 @@ def main(repeat):
         # Toggle play/pause functionality
         def toggle_play_pause(button, file_path):
             global is_playing
-            if button["text"] == "▶️":
+            print(f"Button clicked: {button['text']}")  # Debugging: Print the button text
+            if button["text"] == "▶":
                 is_playing = True
-                button["text"] = "⏸"
                 play_song(button, file_path)
-                update_slider(playback_slider, playback_label)  # Pass the slider and label
+                update_progress_bar(playback_progress, playback_label, total_length)  # Pass the progress bar and label
             else:
                 is_playing = False
-                button["text"] = "▶️"
                 play_song(button, file_path)
 
         # Mock function to set volume
@@ -265,11 +268,11 @@ def main(repeat):
         sample_rate = 44100  # Example: 44.1 kHz
 
 
-    def create_plylst(root):
+    def create_plylst(root): #function to create a playlist
         clear_frame(plylst)
         nme = tk.StringVar()
 
-        def slct_sngs():
+        def slct_sngs(): #select what songs are in the playlist
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
             root.geometry("")
@@ -294,12 +297,12 @@ def main(repeat):
         ttk.Entry(plylst, textvariable=nme).grid(column=0, row=1, padx=5, pady=5)
         ttk.Button(plylst, text="Enter information", command=slct_sngs).grid(column=0, row=2, padx=10, pady=10)
     
-    def edt_plylst(root):
+    def edt_plylst(root): #function to edit playlists
         clear_frame(plylst)
 
         root.geometry("")
 
-        def edit_sngs(option):
+        def edit_sngs(option): #edit songs in a playlist
             nme = lstbox.curselection()
             clear_frame(plylst)
             root.geometry("")
@@ -323,7 +326,7 @@ def main(repeat):
 
             # The rest of this is someone else's ############################################################################################
 
-        option = playlist_names(playlists) #Integrate this with everything else ###################################################################################                    EEEEEEEEEEEEE
+        option = playlist_names(playlists) #get playlist names ###################################################################################
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -353,11 +356,8 @@ def main(repeat):
         def del_plylst():
             nme = lstbox.curselection()
             clear_frame(plylst)
-            # This is someone else's ############################################################################################
+            # populate box ############################################################################################
             pop_plylst()
-            playlists = load_to_playlists('songs.csv')
-            from song_handling import remove_playlist
-            playlists = remove_playlist(playlists, nme[2])
         options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
@@ -394,7 +394,7 @@ def main(repeat):
                 pop_plylst()
 
 
-            options = playlist_songs(playlists, playlist_names(playlists)[nme[0]]) #Integrate this with everything else ###################################################################################                 EEEEEEEEEEEEE
+            options = playlist_songs(playlists, playlist_names(playlists)[nme[0]]) #get songs in the playlist ###################################################################################                 EEEEEEEEEEEEE
 
             # Scrollbar
             scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -417,7 +417,7 @@ def main(repeat):
 
             ttk.Button(plylst, text="Go back", command=back).pack()
             
-        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################                     EEEEEEEEEEEEEEEEEEEEEEE
+        options = playlist_names(playlists) #get playlist names ###################################################################################                     EEEEEEEEEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
