@@ -7,7 +7,6 @@ from audio import *
 print(set_volume)
 from save_load import *
 import time
-from audio import stop_bar1
 
 def main(repeat):
     #variable, dictoinary that stores playlists and songs
@@ -61,11 +60,10 @@ def main(repeat):
             #update playlists, adding and removing songs
             playlists[export[0]] = []
             for i in export[1]:
-                playlists[export[0]].append(i)
+                playlists[export[0]].append(list(i))
 
             print(playlists)
-            print(playlists_to_songs(playlists))
-#            playlists_to_save(playlists, 'songs.csv')
+            playlists_to_save(playlists, 'songs.csv')
 
             
             try:
@@ -219,19 +217,7 @@ def main(repeat):
 
         # Start updating the slider when playback starts
         total_length = get_song_length(file_path)  # Get the total length of the song
-
-        stop_bar = stop_bar1() # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    
-        if stop_bar == False:
-            update_slider(playback_slider, playback_label)
-        if stop_bar == True:
-            stop_song()
+        update_slider(playback_slider, playback_label)
 
         # Play/Pause button
         pse_ply = tk.Button(
@@ -320,7 +306,7 @@ def main(repeat):
             root.geometry("")
             nme = option[nme[0]]
 
-            options = playlist_songs(playlists, nme) #Figure out how to integrate this later ===========================================================
+            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
             preselected_indices = song_index('songs.csv', playlists, nme)  # Integrate this with everything else ###################################################################################
 
             # Create and pack the MultiSelectListbox
@@ -398,6 +384,7 @@ def main(repeat):
         root.geometry("")
         def show_songs(option):
             nme = lstbox.curselection()
+            print(nme)
             clear_frame(plylst)
 
             def back():
@@ -405,7 +392,7 @@ def main(repeat):
                 pop_plylst()
 
 
-            options = playlist_songs(playlists, option[0]) #Integrate this with everything else ###################################################################################                 EEEEEEEEEEEEE
+            options = playlist_songs(playlists, playlist_names(playlists)[nme[0]]) #Integrate this with everything else ###################################################################################                 EEEEEEEEEEEEE
 
             # Scrollbar
             scrollbar = tk.Scrollbar(plylst, orient='vertical')
