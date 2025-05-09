@@ -30,7 +30,7 @@ def change_speed(speed_slider, speed_label):  # Changes the speed
 
 # Function to play the song
 def play_song(play_button, file_path):  # Play or pause the song
-    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path, stop_bar2
+    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path
     try:
         if audio_data is None or sample_rate is None:
             sample_rate, data = read(file_path)
