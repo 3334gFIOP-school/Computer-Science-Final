@@ -355,6 +355,9 @@ def main(repeat):
             clear_frame(plylst)
             # This is someone else's ############################################################################################
             pop_plylst()
+            playlists = load_to_playlists('songs.csv')
+            from song_handling import remove_playlist
+            playlists = remove_playlist(playlists, nme[2])
         options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
