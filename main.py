@@ -7,7 +7,6 @@ from audio import *
 print(set_volume)
 from save_load import *
 import time
-from audio import stop_bar1
 
 def main(repeat):
     #variable, dictoinary that stores playlists and songs
@@ -61,11 +60,10 @@ def main(repeat):
             #update playlists, adding and removing songs
             playlists[export[0]] = []
             for i in export[1]:
-                playlists[export[0]].append(i)
+                playlists[export[0]].append(list(i))
 
             print(playlists)
-            print(playlists_to_songs(playlists))
-#            playlists_to_save(playlists, 'songs.csv')
+            playlists_to_save(playlists, 'songs.csv')
 
             
             try:
@@ -126,7 +124,7 @@ def main(repeat):
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
             pop_audio(root, ply, "Audio\\alarm.wav")
-        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################            EEEEEEEEEEEEEEEE
+        options = playlist_names(playlists) #get playlist names ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(ply_sng, orient='vertical')
@@ -271,11 +269,11 @@ def main(repeat):
         sample_rate = 44100  # Example: 44.1 kHz
 
 
-    def create_plylst(root):
+    def create_plylst(root): #function to create a playlist
         clear_frame(plylst)
         nme = tk.StringVar()
 
-        def slct_sngs():
+        def slct_sngs(): #select what songs are in the playlist
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
             root.geometry("")
@@ -300,18 +298,18 @@ def main(repeat):
         ttk.Entry(plylst, textvariable=nme).grid(column=0, row=1, padx=5, pady=5)
         ttk.Button(plylst, text="Enter information", command=slct_sngs).grid(column=0, row=2, padx=10, pady=10)
     
-    def edt_plylst(root):
+    def edt_plylst(root): #function to edit playlists
         clear_frame(plylst)
 
         root.geometry("")
 
-        def edit_sngs(option):
+        def edit_sngs(option): #edit songs in a playlist
             nme = lstbox.curselection()
             clear_frame(plylst)
             root.geometry("")
             nme = option[nme[0]]
 
-            options = playlist_songs(playlists, nme) #Figure out how to integrate this later ===========================================================
+            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
             preselected_indices = song_index('songs.csv', playlists, nme)  # Integrate this with everything else ###################################################################################
 
             # Create and pack the MultiSelectListbox
@@ -329,7 +327,7 @@ def main(repeat):
 
             # The rest of this is someone else's ############################################################################################
 
-        option = playlist_names(playlists) #Integrate this with everything else ###################################################################################                    EEEEEEEEEEEEE
+        option = playlist_names(playlists) #get playlist names ###################################################################################
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -359,9 +357,14 @@ def main(repeat):
         def del_plylst():
             nme = lstbox.curselection()
             clear_frame(plylst)
-            # This is someone else's ############################################################################################
+            # populate box ############################################################################################
             pop_plylst()
-        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
+            
+            #remove selected playlist
+            playlists.pop(playlist_names(playlists)[nme[0]])
+            playlists_to_save(playlists, 'songs.csv')
+
+        options = playlist_names(playlists) #get playlist names ###################################################################################
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -389,6 +392,7 @@ def main(repeat):
         root.geometry("")
         def show_songs(option):
             nme = lstbox.curselection()
+            print(nme)
             clear_frame(plylst)
 
             def back():
@@ -396,7 +400,7 @@ def main(repeat):
                 pop_plylst()
 
 
-            options = playlist_songs(playlists, option[0]) #Integrate this with everything else ###################################################################################                 EEEEEEEEEEEEE
+            options = playlist_songs(playlists, playlist_names(playlists)[nme[0]]) #get songs in the playlist ###################################################################################                 EEEEEEEEEEEEE
 
             # Scrollbar
             scrollbar = tk.Scrollbar(plylst, orient='vertical')
@@ -419,7 +423,7 @@ def main(repeat):
 
             ttk.Button(plylst, text="Go back", command=back).pack()
             
-        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################                     EEEEEEEEEEEEEEEEEEEEEEE
+        options = playlist_names(playlists) #get playlist names ###################################################################################                     EEEEEEEEEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')
