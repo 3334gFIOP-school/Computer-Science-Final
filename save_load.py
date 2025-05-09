@@ -20,6 +20,14 @@ def save(songs, csv):
     pd.DataFrame(songs).to_csv(csv, index=False)
 
 
+#functoin to make a list of all songs
+def list_songs(csv):
+    songs = load(csv)
+    song_list = []
+    for i in songs['name']:
+        song_list.append([songs['name'][i],songs['path'][i]])
+
+    return song_list
 
 
 #functoin to re-format the dictoinary to be based on playlists
@@ -53,6 +61,8 @@ def playlists_to_songs(playlists):
         'playlists': {}
     }
 
+    #variable for length of songs
+    length = 0
     #add songs
     for ind, playlist_list in enumerate(playlists.values()):
         for i, song in enumerate(playlist_list):
@@ -60,6 +70,7 @@ def playlists_to_songs(playlists):
                 songs['path'][i+ind] = song[1]
                 songs['name'][i+ind] = song[0]
                 songs['playlists'][i+ind] = []
+                length = i+ind+1
 
     #add playlists
     for playlist in playlists:
@@ -67,6 +78,13 @@ def playlists_to_songs(playlists):
             for ind in songs['path']:
                 if songs['path'][ind] == song[1]:
                     songs['playlists'][ind].append(playlist)
+
+    #add songs that aren't in playlists
+    for ind, song in enumerate(list_songs('songs.csv')):
+        if song[0] not in songs['name'].values():
+            songs['name'][length+ind] = song[0]
+            songs['path'][length+ind] = song[1]
+            songs['playlists'][length+ind] = []
 
     return songs
 
@@ -124,14 +142,7 @@ def sep_songs(songs):
 
 
 
-#functoin to make a list of all songs
-def list_songs(csv):
-    songs = load(csv)
-    song_list = []
-    for i in songs['name']:
-        song_list.append([songs['name'][i],songs['path'][i]])
 
-    return song_list
 
 
 #functoin to make a list of indexes of songs in a playlist compared to all songs
@@ -146,3 +157,6 @@ def song_index(csv, playlists, name):
                 song_indexes.append(ind)
 
     return song_indexes
+
+
+
