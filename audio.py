@@ -95,15 +95,15 @@ def play_song(play_button, file_path):  # Play or pause the song
                     stop_song()  # Clear old state before next song
                     play_song(play_button, path)
 
-        if play_button["text"] == "▶️":
+        if play_button["text"] == "▶":
             is_playing = True
             playback_thread = threading.Thread(target=playback_thread_func, args=(play_button,))
             playback_thread.start()
-            play_button.config(text="⏸", font=("Helvetica", 20, "bold"))
+            play_button.config(text="▐▐", font=("Helvetica", 20, "bold"))
             print("Playing song")
         else:
             is_playing = False  # Pause only (retain position)
-            play_button.config(text="▶️", font=("Helvetica", 20, "bold"))
+            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
             print("Paused song")
 
     except Exception as err:
