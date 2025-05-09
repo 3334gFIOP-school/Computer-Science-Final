@@ -155,12 +155,13 @@ def main(repeat):
             global is_playing, playback_position
 
             if is_playing:
-                playback_position += 1  # Increment playback position by 1 second
+                if not playback_position >= song_length:
+                    playback_position += 1  # Increment playback position by 1 second
                 slider.set(playback_position)  # Update the slider's position
                 label.config(text=f"Position: {playback_position}s")  # Update the label with the current position
 
                 # Schedule the function to run again after 1 second
-                slider.after(1000, update_slider, slider, label)
+                slider.after(1000, update_slider, slider, label) # HERE =========================================================================================================================
 
         ply = False
         root.geometry("")
@@ -204,11 +205,11 @@ def main(repeat):
         # Playback position slider and label
         playback_label = ttk.Label(ply_sng, text="Position: 0s", font=("Helvetica", 14))
         playback_label.grid(row=6, column=1, padx=10, pady=5)
-
+        song_length = get_song_length(file_path)  # Get the total length of the song
         playback_slider = ttk.Scale(
             ply_sng,
             from_=0,
-            to=get_song_length(file_path),  # Set the maximum value to the song length
+            to=song_length,  # Set the maximum value to the song length
             orient="horizontal",
             length=300,
         )
