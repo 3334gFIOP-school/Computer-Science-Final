@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from audio import *
-print(set_volume)
 from save_load import *
 import time
 
@@ -359,12 +358,7 @@ def main(repeat):
             clear_frame(plylst)
             # populate box ############################################################################################
             pop_plylst()
-            
-            #remove selected playlist
-            playlists.pop(playlist_names(playlists)[nme[0]])
-            playlists_to_save(playlists, 'songs.csv')
-
-        options = playlist_names(playlists) #get playlist names ###################################################################################
+        options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
         scrollbar = tk.Scrollbar(plylst, orient='vertical')

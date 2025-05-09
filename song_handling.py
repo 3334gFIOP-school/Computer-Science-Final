@@ -83,18 +83,17 @@ def add_playlist(playlists):
     return playlists
 
 # Remove an existing playlist
-def remove_playlist(playlists):
-    # Prompt user for the playlist name
-    playlist_name = input("Enter the name of the playlist: ") # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def remove_playlist(playlists, playlist):
 
     # Check if the playlist exists and remove it
-    if playlist_name in playlists.keys():
-        playlists.pop(playlist_name)  # Remove the playlist
-        return playlists
-    else:
-        print("Playlist does not exist")
-        playlists = remove_playlist(playlists)  # Retry removing the playlist
-        return playlists
+    for song in playlists:
+        for playlistnme in song[2]:
+            if playlistnme == playlist:
+                playlists.pop(playlist)  # Remove the playlist
+                return playlists
+    print("Playlist does not exist")
+    playlists = remove_playlist(playlists)  # Retry removing the playlist
+    return playlists
 
 def next_song_in_playlist(current_playlist, current_song_name):
     x = 0
