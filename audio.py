@@ -3,7 +3,10 @@ import sounddevice as sd
 import numpy as np
 from scipy.io.wavfile import read
 import threading
-
+# COMMENTS HERE
+#1
+#
+#
 # Global variables
 is_playing = False
 current_speed = 1.0
