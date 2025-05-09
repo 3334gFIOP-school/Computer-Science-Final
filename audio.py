@@ -1,12 +1,8 @@
-# Audio Handling - Jackson Hauley
-
 import tkinter as tk
 import sounddevice as sd
 import numpy as np
 from scipy.io.wavfile import read
 import threading
-from save_load import *
-from song_handling import *
 
 # Global variables
 is_playing = False
@@ -25,9 +21,16 @@ def stop_bar1():
     if stop_bar2 == True:
         return False
 
+# Function to change speed 
+def change_speed(speed_slider, speed_label):  # Changes the speed
+    global current_speed
+    current_speed = round(float(speed_slider), 1)  # Convert value to float and round it
+    speed_label.config(text=f"Speed: {current_speed}x")
+    print(f"Playback speed changed to {current_speed}x")
 
+# Function to play the song
 def play_song(play_button, file_path):  # Play or pause the song
-    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path,stop_bar2
+    global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path, stop_bar2
     try:
         if audio_data is None or sample_rate is None:
             sample_rate, data = read(file_path)
@@ -57,7 +60,7 @@ def play_song(play_button, file_path):  # Play or pause the song
             for i in range(frames):
                 pos = int(playback_position)
                 if pos >= len(audio_data):  # End of song
-                    print("Song Ended") # SONG ENDS HERERERERERERERERERERERE ================================================================================================================
+                    print("Song Ended")  # SONG ENDS
                     stop_bar2 = True
                     is_playing = False
                     raise sd.CallbackStop()
@@ -107,13 +110,7 @@ def play_song(play_button, file_path):  # Play or pause the song
     except Exception as err:
         print(f"Error playing song: {err}")
 
-
-def play_next_song(file_path):  # Queues a song to play after the current one ends
-    global next_song_path
-    next_song_path = file_path
-    print(f"Next song queued: {file_path}")
-
-
+# Function to stop the song
 def stop_song():  # Stops the song
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume
     is_playing = False
@@ -125,6 +122,7 @@ def stop_song():  # Stops the song
     volume = 1.0  # Default volume 100%
     print("Stopped song")
 
+# Function to set volume
 def set_volume(value, label):
     try:
         global volume
@@ -134,21 +132,7 @@ def set_volume(value, label):
     except Exception as e:
         print(f"Error setting volume: {e}")
 
-def change_speed(speed_slider, speed_label):  # Changes the speed
-    global current_speed
-    current_speed = round(float(speed_slider), 1)  # Convert value to float and round it
-    speed_label.config(text=f"Speed: {current_speed}x")
-    print(f"Playback speed changed to {current_speed}x")
-
-
-def create_replay_button(root, play_button, file_path):  # Replay button
-    def replay_song():
-        stop_song()
-        play_button.config(text="▶️", font=("Helvetica", 20, "bold"))
-        play_song(play_button, file_path)
-    replay_button = tk.Button(root, text="🔂", font=("Helvetica", 20, "bold"), command=replay_song)
-    replay_button.pack()
-
+# Function to get song length
 def get_song_length(file_path):  # Gets the song length in seconds using file path
     try:
         sample_rate, data = read(file_path)
@@ -156,3 +140,9 @@ def get_song_length(file_path):  # Gets the song length in seconds using file pa
     except Exception as e:
         print(f"Error getting song length: {e}")
         return 0
+
+# Function to seek to a specific position in the song
+def seek_to_position(seconds):
+    global playback_position
+    playback_position = seconds * sample_rate  # Convert seconds to samples
+    print(f"Seeking to {seconds}s, which is {playback_position} samples.")
