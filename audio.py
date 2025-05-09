@@ -4,7 +4,7 @@ import numpy as np
 from scipy.io.wavfile import read
 import threading
 # COMMENTS HERE
-#
+#1
 #
 #
 # Global variables
