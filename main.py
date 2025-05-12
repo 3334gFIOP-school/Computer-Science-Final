@@ -122,7 +122,7 @@ def main(repeat):
             nme = lstbox.curselection()
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
-            pop_audio(root, ply, "Audio\\alarm.wav")
+            pop_audio(root, ply, "Audio\\normal sound effect.wav") # Make the file path an actual variable that becomes the link from a selection from the playlist in a menu ==================================================================================================================================================================
         options = playlist_names(playlists) #get playlist names ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
@@ -242,20 +242,6 @@ def main(repeat):
             else:
                 is_playing = False
                 play_song(button, file_path)
-
-        # Mock function to set volume
-        def set_volume(value, label):
-            label.config(text=f"Volume: {int(float(value))}%")
-            print(f"Volume set to {int(float(value))}%")  # Debugging output
-
-        # Mock function to change speed
-        def change_speed(value, label):
-            try:
-                current_speed = round(float(value), 1)  # Ensure value is converted to a float
-                label.config(text=f"Speed: {current_speed}x")
-                print(f"Playback speed set to {current_speed}x")  # Debugging output
-            except Exception as e:
-                print(f"Error changing speed: {e}")
 
         # Mock function to get song length
         def get_song_length(file_path=None):

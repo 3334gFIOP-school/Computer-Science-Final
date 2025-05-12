@@ -51,7 +51,7 @@ def play_song(play_button, file_path):  # Play or pause the song
             playback_position = 0
 
         def audio_callback(outdata, frames, time, status):
-            global playback_position, is_playing
+            global playback_position, is_playing,volume, current_speed
 
             if not is_playing:
                 raise sd.CallbackStop()
