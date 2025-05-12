@@ -50,6 +50,7 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
         if playback_position >= len(audio_data):
             playback_position = 0
 
+
         def audio_callback(outdata, frames, time, status, list_of_songs, playback_progress, current_time, total_length):
             global playback_position, is_playing
 

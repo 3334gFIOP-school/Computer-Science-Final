@@ -125,7 +125,7 @@ def main(repeat):
             nme = lstbox.curselection()
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
-            pop_audio(root, ply, "Audio\\alarm.wav")
+            pop_audio(root, ply, "Audio\\normal sound effect.wav") # Make the file path an actual variable that becomes the link from a selection from the playlist in a menu ==================================================================================================================================================================
         options = playlist_names(playlists) #get playlist names ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
@@ -245,6 +245,7 @@ def main(repeat):
             else:
                 is_playing = False
                 play_song(button, file_path, list_of_songs, progress, playback_position, total_length)
+
 
         # Mock function to set volume
         def set_volume(value, label):
