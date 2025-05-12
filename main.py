@@ -83,7 +83,10 @@ def main(repeat):
         nonlocal repeat
         repeat = False
         root.destroy()
+        from audio import stop_song
+        stop_song()
         return repeat
+    # Set the window to be resizable
 
     root.protocol("WM_DELETE_WINDOW", on_close)
 
@@ -232,16 +235,16 @@ def main(repeat):
         pse_ply.grid(row=1, column=1, padx=10, pady=10)
 
         # Toggle play/pause functionality
-        def toggle_play_pause(button, file_path):
+        def toggle_play_pause(button, file_path, progress, playback_position, total_length, list_of_songs):
             global is_playing
             print(f"Button clicked: {button['text']}")  # Debugging: Print the button text
             if button["text"] == "▶":
                 is_playing = True
-                play_song(button, file_path)
+                play_song(button, file_path, list_of_songs, progress, playback_position, total_length)
                 update_progress_bar(playback_progress, playback_label, total_length)  # Pass the progress bar and label
             else:
                 is_playing = False
-                play_song(button, file_path)
+                play_song(button, file_path, list_of_songs, progress, playback_position, total_length)
 
         # Mock function to set volume
         def set_volume(value, label):
@@ -256,10 +259,6 @@ def main(repeat):
                 print(f"Playback speed set to {current_speed}x")  # Debugging output
             except Exception as e:
                 print(f"Error changing speed: {e}")
-
-        # Mock function to get song length
-        def get_song_length(file_path=None):
-            return 180  # Example: 3 minutes
 
         # Mock global variables for playback
         global is_playing, playback_position, sample_rate

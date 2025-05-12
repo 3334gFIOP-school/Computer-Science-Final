@@ -32,7 +32,7 @@ def change_speed(speed_slider, speed_label):  # Changes the speed
     print(f"Playback speed changed to {current_speed}x")
 
 # Function to play the song
-def play_song(play_button, file_path):  # Play or pause the song
+def play_song(play_button, file_path, list_of_songs, playback_progress, current_time, total_length):  # Play or pause the song
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path
     try:
         if audio_data is None or sample_rate is None:
@@ -50,7 +50,7 @@ def play_song(play_button, file_path):  # Play or pause the song
         if playback_position >= len(audio_data):
             playback_position = 0
 
-        def audio_callback(outdata, frames, time, status):
+        def audio_callback(outdata, frames, time, status, list_of_songs, playback_progress, current_time, total_length):
             global playback_position, is_playing
 
             if not is_playing:
@@ -62,9 +62,28 @@ def play_song(play_button, file_path):  # Play or pause the song
             for i in range(frames):
                 pos = int(playback_position)
                 if pos >= len(audio_data):  # End of song
-                    print("Song Ended") # SONG ENDS HERERERERERERERERERERERE ================================================================================================================
+                    print("Song Ended")
                     stop_bar2 = True
                     is_playing = False
+                    # List_of_songs is not implemented, we need this implemented ==========================================================================================================================================
+                    # Check if there are more songs in the list
+                    if list_of_songs:
+                        next_song_path = list_of_songs.pop(0)  # Get the next song from the list
+                        print(f"Loading next song: {next_song_path}")
+                        stop_song()  # Stop the current song
+
+                        current_time = 90
+                        playback_progress["value"] = 0
+                        total_length = 180  # Example: Total song length is 180 seconds
+                        playback_progress["value"] = (current_time / total_length) * 100  # Set progress as a percentage
+
+                        play_song(play_button, next_song_path)  # Play the next song
+                    else:
+                        # If no more songs, call the function from main.py to pick a playlist
+                        from main import pick_playlist  # Import the function from main.py
+                        print("No more songs in the list. Prompting user to pick a new playlist.")
+                        pick_playlist()  # Call the function to prompt the user
+
                     raise sd.CallbackStop()
 
                 next_pos = min(pos + 1, len(audio_data) - 1)
@@ -87,7 +106,7 @@ def play_song(play_button, file_path):  # Play or pause the song
             global is_playing, next_song_path
             channels = 2 if audio_data.ndim > 1 else 1
             try:
-                with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=audio_callback):
+                with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback= audio_callback):
                     while is_playing:
                         sd.sleep(100)
             finally:
