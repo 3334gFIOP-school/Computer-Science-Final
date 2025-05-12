@@ -152,9 +152,8 @@ def main(repeat):
 
     def pop_audio(root, ply, file_path):
         from audio import play_song, stop_song, set_volume, get_song_length
-
         def update_progress_bar(progress, label, total_length):
-            global playback_position, is_playing
+            global playback_position, is_playing,sent_progress
 
             if is_playing:
                 playback_position += 1  # Increment playback position by 1 second
@@ -164,6 +163,7 @@ def main(repeat):
                 # Schedule the function to run again after 1 second
                 if playback_position < total_length:
                     progress.after(1000, update_progress_bar, progress, label, total_length)
+            sent_progress = progress
 
         ply = False
         root.geometry("")
@@ -224,12 +224,11 @@ def main(repeat):
         # Start updating the progress bar when playback starts
         total_length = get_song_length(file_path)  # Get the total length of the song
         update_progress_bar(playback_progress, playback_label, total_length)
-
         # Play/Pause button
         pse_ply = tk.Button(
             ply_sng,
             text="▶",
-            command=lambda: toggle_play_pause(pse_ply, file_path),
+            command=lambda: toggle_play_pause(pse_ply, file_path, sent_progress, playback_position, total_length, playlist_songs(playlists,plylst["name"])), # Alec this is where the function that finds the list of the songs in the playlist should go
             font=attention,
         )
         pse_ply.grid(row=1, column=1, padx=10, pady=10)
