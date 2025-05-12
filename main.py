@@ -358,6 +358,11 @@ def main(repeat):
             clear_frame(plylst)
             # populate box ############################################################################################
             pop_plylst()
+
+            #remove selected playlists
+            playlists.pop(playlist_names(playlists)[nme[0]])
+            playlists_to_save(playlists, 'songs.csv')
+
         options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
