@@ -1,7 +1,7 @@
 name,path,playlists
 alarm,Audio/alarm.wav,['all songs']
-Desmeon,Audio/Desmeon - Hellcat.wav,"['all songs', 'h']"
+Desmeon,Audio/Desmeon - Hellcat.wav,"['all songs', 'haha']"
 Normal Sound Effect,Audio/normal sound effect.wav,"['all songs', 'test', 'things']"
-Elektronoma,Audio/Elektronomia - Summersong.wav,"['all songs', 'banana']"
 Disfigure,Audio/Disfigure - Blank.wav,"['all songs', 'banana']"
+Elektronoma,Audio/Elektronomia - Summersong.wav,['banana']
 Egzod,Audio/Egzod - Rise Up.wav,[]
