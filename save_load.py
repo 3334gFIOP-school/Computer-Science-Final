@@ -160,3 +160,11 @@ def song_index(csv, playlists, name):
 
 
 
+#function to make a list of the paths in a playlist
+def playlist_song_paths(playlists, name):
+    songs = playlist_songs(playlists, name)
+    paths = []
+    for i in songs:
+        paths.append(i[1])
+
+    return paths
