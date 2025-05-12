@@ -38,7 +38,7 @@ Paragraph describing how to use the project.
 ---
 + It plays songs  
 + You can change the volume and speed  
-+ Third feature I am proud of  
++ Add songs and customize playlists  
 
 ## Contributions  
 ---
