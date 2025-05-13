@@ -245,28 +245,6 @@ def main(repeat):
                 is_playing = False
                 play_song(button, file_path, list_of_songs, progress, playback_position, total_length)
 
-
-        # Mock function to set volume
-        def set_volume(value, label):
-            label.config(text=f"Volume: {int(float(value))}%")
-            print(f"Volume set to {int(float(value))}%")  # Debugging output
-
-        # Mock function to change speed
-        def change_speed(value, label):
-            try:
-                current_speed = round(float(value), 1)  # Ensure value is converted to a float
-                label.config(text=f"Speed: {current_speed}x")
-                print(f"Playback speed set to {current_speed}x")  # Debugging output
-            except Exception as e:
-                print(f"Error changing speed: {e}")
-
-        # Mock global variables for playback
-        global is_playing, playback_position, sample_rate
-        is_playing = False
-        playback_position = 0
-        sample_rate = 44100  # Example: 44.1 kHz
-
-
     def create_plylst(root): #function to create a playlist
         clear_frame(plylst)
         nme = tk.StringVar()
