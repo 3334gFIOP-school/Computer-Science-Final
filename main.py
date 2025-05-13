@@ -228,7 +228,7 @@ def main(repeat):
         pse_ply = tk.Button(
             ply_sng,
             text="▶",
-            command=lambda: toggle_play_pause(pse_ply, file_path, sent_progress, playback_position, total_length, playlist_songs(playlists,plylst["name"])), # Alec this is where the function that finds the list of the songs in the playlist should go
+            command=lambda: toggle_play_pause(pse_ply, file_path, sent_progress, playback_position, total_length, playlist_song_paths(playlists,plylst)), # Alec this is where the function that finds the list of the songs in the playlist should go
             font=attention,
         )
         pse_ply.grid(row=1, column=1, padx=10, pady=10)
