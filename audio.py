@@ -107,7 +107,7 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
             global is_playing, next_song_path
             channels = 2 if audio_data.ndim > 1 else 1
             try:
-                with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback= audio_callback):
+                with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=lambda: audio_callback(list_of_songs, playback_progress, current_time, total_length)):
                     while is_playing:
                         sd.sleep(100)
             finally:
