@@ -125,7 +125,7 @@ def main(repeat):
             nme = lstbox.curselection()
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
-            pop_audio(root, ply, "Audio\\normal sound effect.wav") # Make the file path an actual variable that becomes the link from a selection from the playlist in a menu ==================================================================================================================================================================
+            pop_audio(root, ply, "Audio\\normal sound effect.wav", nme) # Make the file path an actual variable that becomes the link from a selection from the playlist in a menu ==================================================================================================================================================================
         options = playlist_names(playlists) #get playlist names ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
@@ -150,7 +150,7 @@ def main(repeat):
         ttk.Button(ply_sng, text="Pick playlist", command=pck).pack()
     pick_plylst(root)
 
-    def pop_audio(root, ply, file_path):
+    def pop_audio(root, ply, file_path, nme):
         from audio import play_song, stop_song, set_volume, get_song_length
         def update_progress_bar(progress, label, total_length):
             global playback_position, is_playing,sent_progress
@@ -228,7 +228,7 @@ def main(repeat):
         pse_ply = tk.Button(
             ply_sng,
             text="▶",
-            command=lambda: toggle_play_pause(pse_ply, file_path, sent_progress, playback_position, total_length, playlist_song_paths(playlists,plylst)), # Alec this is where the function that finds the list of the songs in the playlist should go
+            command=lambda: toggle_play_pause(pse_ply, file_path, sent_progress, playback_position, total_length, playlist_song_paths(playlists,list_playlists(playlists)[nme[0]])), # Alec this is where the function that finds the list of the songs in the playlist should go
             font=attention,
         )
         pse_ply.grid(row=1, column=1, padx=10, pady=10)

@@ -168,3 +168,13 @@ def playlist_song_paths(playlists, name):
         paths.append(i[1])
 
     return paths
+
+
+
+#functoin to make a list of playlists
+def list_playlists(playlists):
+    playlist_list = []
+    for i in playlists:
+        playlist_list.append(i)
+
+    return playlist_list
