@@ -1,7 +1,7 @@
 name,path,playlists
 alarm,Audio/alarm.wav,"['all songs', '  f  Fe fsef se fsd f']"
-Desmeon,Audio/Desmeon - Hellcat.wav,"['all songs', 'haha']"
-Normal Sound Effect,Audio/normal sound effect.wav,"['all songs', 'things', '  f  Fe fsef se fsd f']"
-Disfigure,Audio/Disfigure - Blank.wav,"['all songs', 'banana', '  f  Fe fsef se fsd f']"
-Elektronoma,Audio/Elektronomia - Summersong.wav,['banana']
-Egzod,Audio/Egzod - Rise Up.wav,['  f  Fe fsef se fsd f']
+Desmeon,Audio/Desmeon - Hellcat.wav,"['all songs', 'haha', 'playlistfunfuntimeplaytimeact27']"
+Normal Sound Effect,Audio/normal sound effect.wav,"['all songs', '  f  Fe fsef se fsd f', 'playlistfunfuntimeplaytimeact27', 'things']"
+Disfigure,Audio/Disfigure - Blank.wav,"['all songs', '  f  Fe fsef se fsd f', 'playlistfunfuntimeplaytimeact27', 'banana']"
+Egzod,Audio/Egzod - Rise Up.wav,"['  f  Fe fsef se fsd f', 'playlistfunfuntimeplaytimeact27']"
+Elektronoma,Audio/Elektronomia - Summersong.wav,"['playlistfunfuntimeplaytimeact27', 'banana']"
