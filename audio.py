@@ -105,6 +105,7 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
             try:
                 with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32',
                                      callback=audio_callback):
+
                     while is_playing:
                         sd.sleep(100)
             finally:
