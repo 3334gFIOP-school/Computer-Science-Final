@@ -118,7 +118,11 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
 
         if play_button["text"] == "▶":
             is_playing = True
-            playback_thread = threading.Thread(target=playback_thread_func, args=(play_button,))
+            try:
+                playback_thread = threading.Thread(target=playback_thread_func, args=(play_button,))
+            except Exception as err:
+                print(f"Error creating playback thread: {err}")
+                return
             playback_thread.start()
             play_button.config(text="▐▐", font=("Helvetica", 20, "bold"))
             print("Playing song")
