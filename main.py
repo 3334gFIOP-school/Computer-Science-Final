@@ -179,13 +179,13 @@ def main(repeat):
 
         volume_slider = ttk.Scale(
             ply_sng,
-            from_=0,
-            to=100,
+            from_=0.5,
+            to=2,
             orient="horizontal",
-            length=200,
+            length=1,
             command=lambda value: set_volume(value, volume_label),  # Calls set_volume from audio.py
         )
-        volume_slider.set(50)
+        volume_slider.set(0.5)
         volume_slider.grid(row=3, column=1, padx=10, pady=5)
 
         # Speed label and slider
