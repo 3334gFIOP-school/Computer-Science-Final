@@ -152,18 +152,9 @@ def main(repeat):
 
     def pop_audio(root, ply, file_path, nme):
         from audio import play_song, stop_song, set_volume, get_song_length
-        def update_progress_bar(progress, label, total_length):
-            global playback_position, is_playing,sent_progress
+        from utils import update_progress_bar
 
-            if is_playing:
-                playback_position += 1  # Increment playback position by 1 second
-                progress["value"] = (playback_position / total_length) * 100  # Update progress bar
-                label.config(text=f"Position: {playback_position}s")  # Update the label with the current position
-
-                # Schedule the function to run again after 1 second
-                if playback_position < total_length:
-                    progress.after(1000, update_progress_bar, progress, label, total_length)
-            sent_progress = progress
+        playback_position = 0  # Initialize playback position
 
         ply = False
         root.geometry("")
@@ -223,12 +214,12 @@ def main(repeat):
 
         # Start updating the progress bar when playback starts
         total_length = get_song_length(file_path)  # Get the total length of the song
-        update_progress_bar(playback_progress, playback_label, total_length)
+        update_progress_bar(playback_progress, playback_label, total_length, is_playing)
         # Play/Pause button
         pse_ply = tk.Button(
             ply_sng,
             text="▶",
-            command=lambda: toggle_play_pause(pse_ply, file_path, sent_progress, playback_position, total_length, playlist_song_paths(playlists,list_playlists(playlists)[nme[0]])), # Alec this is where the function that finds the list of the songs in the playlist should go
+            command=lambda: toggle_play_pause(pse_ply, file_path, lambda: update_progress_bar(playback_progress, playback_label, total_length, is_playing), playback_position, total_length, playlist_song_paths(playlists,list_playlists(playlists)[nme[0]])), # Alec this is where the function that finds the list of the songs in the playlist should go
             font=attention,
         )
         pse_ply.grid(row=1, column=1, padx=10, pady=10)
@@ -240,7 +231,7 @@ def main(repeat):
             if button["text"] == "▶":
                 is_playing = True
                 play_song(button, file_path, list_of_songs, progress, playback_position, total_length)
-                update_progress_bar(playback_progress, playback_label, total_length)  # Pass the progress bar and label
+                update_progress_bar(playback_progress, playback_label, total_length, is_playing)  # Pass the progress bar and label
             else:
                 is_playing = False
                 play_song(button, file_path, list_of_songs, progress, playback_position, total_length)
