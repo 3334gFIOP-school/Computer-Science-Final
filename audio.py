@@ -123,6 +123,7 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
 
             playback_thread = threading.Thread(target=playback_thread_func, args=(play_button)) ###############################################################################
             playback_thread.start()
+            
             play_button.config(text="▐▐", font=("Helvetica", 20, "bold"))
             print("Playing song")
         else:
