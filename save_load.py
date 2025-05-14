@@ -1,10 +1,7 @@
 # Alec George
 
 
-
 # functions to save and load songs to csv and convert them into a readable format
-
-
 
 
 import pandas as pd

@@ -125,7 +125,7 @@ def main(repeat):
             nme = lstbox.curselection()
             clear_frame(ply_sng)
             # This is someone else's ############################################################################################
-            pop_audio(root, ply, "Audio\\normal sound effect.wav", nme) # Make the file path an actual variable that becomes the link from a selection from the playlist in a menu ==================================================================================================================================================================
+            pop_audio(root, ply, "Audio/error.wav", nme) # Make the file path an actual variable that becomes the link from a selection from the playlist in a menu ==================================================================================================================================================================
         options = playlist_names(playlists) #get playlist names ###################################################################################            EEEEEEEEEEEEEEEE
 
         # Scrollbar
