@@ -6,11 +6,10 @@ from save_load import load_to_playlists as load
 from save_load import playlists_to_save as save
 
 # Check if a song exists in a playlist
-def song_exists(playlist, song_name):
-    for x in playlist:
-        if x == song_name:
-            return song_name  # Return the song name if it exists
-    return False  # Return False if the song does not exist
+def song_exists(playlists, playlist_name):
+    if playlist_name in playlists:
+        return playlist_name  # Return the playlist name if it exists
+    return False  # Return False if the playlist does not exist
 
 # Add a song to a playlist
 def add_song(playlists):
@@ -45,17 +44,18 @@ def remove_song(playlists):
 
     if playlist == False:
         print("Playlist does not exist")
-        playlists = remove_song()  # Retry removing the song
+        playlists = remove_song(playlists)  # Retry removing the song
         return playlists
 
     # Prompt user for the song name
     name = input("Enter the name of the song: ") # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # Check if the song exists in the playlist and remove it
-    for song in playlists[playlist]:
-        if song[0] == name:
-            playlists[playlist].pop(song)  # Remove the song
-            return playlists
+    original_len = len(playlists[playlist])
+    playlists[playlist] = [s for s in playlists[playlist] if s[0] != name]
+
+    if len(playlists[playlist]) < original_len:
+        return playlists
         
     print("Song does not exist in the playlist")
     playlists = remove_song(playlists)  # Retry removing the song
@@ -86,27 +86,30 @@ def add_playlist(playlists):
 def remove_playlist(playlists, playlist):
 
     # Check if the playlist exists and remove it
-    for song in playlists:
-        for playlistnme in song[2]:
-            if playlistnme == playlist:
-                playlists.pop(playlist)  # Remove the playlist
-                return playlists
+    if playlist in playlists:
+        playlists.pop(playlist)  # Remove the playlist
+        return playlists
+
     print("Playlist does not exist")
-    playlists = remove_playlist(playlists)  # Retry removing the playlist
+    playlists = remove_playlist(playlists, input("Enter the name of the playlist to remove: "))  # Retry removing the playlist
     return playlists
 
 def next_song_in_playlist(current_playlist, current_song_name):
     x = 0
     for song in current_playlist:
-        x += 1
         if song[0] == current_song_name:
-            return current_playlist[x][1]  # Return the next song in the playlist's file path
-        
-def next_shuffled_song(current_playlist, current_song_name):
-    random_song = random.choice(current_playlist)
+            if x + 1 < len(current_playlist):
+                return current_playlist[x + 1][1]  # Return the next song in the playlist's file path
+            else:
+                return None  # No next song
+        x += 1
+    return None
 
-    if random_song[0] != current_song_name:
-        return random_song[1]  # Return the file path of the random song
-    else:
-        return next_shuffled_song(current_playlist, current_song_name)
-        
+def next_shuffled_song(current_playlist, current_song_name):
+    if len(current_playlist) <= 1:
+        return current_playlist[0][1]  # Only one song, return it
+
+    random_song = random.choice(current_playlist)
+    while random_song[0] == current_song_name:
+        random_song = random.choice(current_playlist)
+    return random_song[1]  # Return the file path of the random song
