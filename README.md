@@ -10,7 +10,7 @@ Not used for this class.
 
 ## Execution And Usage  
 ---
-Paragraph describing how to use the project.
+You can switch inbetween the tabs to different things. You can create playlists, delete playlists, edit playlists, and show playlists in the playlist edit tab. In the Music Player tab you pick a playlist to use and then it will play the songs in that playlist. You can also change the volume and speed of the song.
 ![image](relative path to the immage NOTE: Image has to be saved in the repository REMOINER: Show what the project looks like when it is running)  
 
 ## Used Technologies  
@@ -36,9 +36,9 @@ Paragraph describing how to use the project.
 
 ## Current Features  
 ---
-+ First feature I am proud of  
-+ Second feature I am proud of  
-+ Third feature I am proud of  
++ It plays songs  
++ You can change the volume and speed  
++ Add songs and customize playlists  
 
 ## Contributions  
 ---
@@ -46,7 +46,7 @@ Not used for this class.
 
 ## Contributors  
 ---
-+ Copilot - what they did: everything   
++ Copilot - Helping with using libraries and debugging  
 + Person who helped 2 - what they did  
 + Person who helped 3 - what they did  
 + Person who helped 4 - what they did  
@@ -61,7 +61,7 @@ Jackson:
 Alec:
 
 Sawyer:  
-I am a computer science student and I work on python projects. yay.
+I am a computer science student and I work on python projects.
 
 Vincent:
 
