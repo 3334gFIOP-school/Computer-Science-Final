@@ -45,14 +45,20 @@ What it looks like when you play a song:
 + Add songs and customize playlists  
 
 ## Contributors  
----
-+ Copilot - Helping with using libraries and debugging  
++ Jackson
++ Alec
++ Sawyer
++ Vincent
++ Various testers (family/friends)
++ Copilot - Helping with using/learning libraries and debugging  
++ ChatGPT (same as CoPilot)
 
 ## Author's Information  
 ---
 Short paragraph about you(Each member of the group, includes contact for professional)
 
 Jackson:
+Computer science student who really likes to code lots of fun stuff! Contact me at jackson.hauley@ucas-edu.net
 
 Alec:
 I lost the game. I am a computer science project that likes to figure out how to code random things. I've taken multiple python classes, and this was the final for one of them.  
