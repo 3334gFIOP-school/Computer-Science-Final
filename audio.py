@@ -43,15 +43,16 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
                 print("Stereo audio detected.")
             else:
                 print("Mono audio detected.")
+            data = data / np.max(np.abs(data))  # Normalize
+            audio_data = data
+            print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
+            if playback_position >= len(audio_data):
+                playback_position = 0
+    except Exception as e:
+        print(f"Error loading audio file: {e}")
+        return
 
-        data = data / np.max(np.abs(data))  # Normalize
-        audio_data = data
-        print(f"Loaded {file_path}, Sample Rate: {sample_rate}, Samples: {len(audio_data)}")
-
-        if playback_position >= len(audio_data):
-            playback_position = 0
-
-        # Define the audio callback function
+    # Define the audio callback function
     def audio_callback(outdata, frames, time, status):
         global playback_position, is_playing, stop_bar2, next_song_path
 
@@ -73,17 +74,19 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
                     print(f"Loading next song: {next_song_path}")
                     stop_song()
 
-                    # Reset progress bar and start updating for the next song
                     playback_position = 0
                     playback_progress["value"] = 0
                     playback_label.config(text="Position: 0s")
                     total_length = get_song_length(next_song_path)
 
                     from utils import update_progress_bar
-                    is_playing = True  # Reset is_playing for the next song
-                    playback_position = update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)
+                    is_playing = True
+                    playback_position = update_progress_bar(
+                        playback_progress, playback_label, total_length, is_playing, playback_position
+                    )
 
-                    play_song(play_button, next_song_path, list_of_songs, playback_progress, playback_position, total_length, playback_label)
+                    play_song(play_button, next_song_path, list_of_songs,
+                              playback_progress, playback_position, total_length, playback_label)
                 else:
                     from main import pick_plylst
                     print("No more songs in the list. Returning to main menu.")
@@ -92,54 +95,18 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
 
             next_pos = min(pos + 1, len(audio_data) - 1)
             fraction = playback_position - pos
-                if channels == 1:
-                    sample = (1 - fraction) * audio_data[pos] + fraction * audio_data[next_pos]
-                    output[i] = sample * volume
-                else:
-                    sample = (1 - fraction) * audio_data[pos, :] + fraction * audio_data[next_pos, :]
-                    output[i, :] = sample * volume
+            if channels == 1:
+                sample = (1 - fraction) * audio_data[pos] + fraction * audio_data[next_pos]
+                output[i] = sample * volume
+            else:
+                sample = (1 - fraction) * audio_data[pos, :] + fraction * audio_data[next_pos, :]
+                output[i, :] = sample * volume
 
-                playback_position += current_speed
+            playback_position += current_speed
 
-            outdata[:len(output)] = output.reshape(outdata[:len(output)].shape)
-            if len(output) < frames:
-                outdata[len(output):] = 0
-
-        def playback_thread_func(play_button):
-            global is_playing, next_song_path
-            channels = 2 if audio_data.ndim > 1 else 1
-            try:
-                with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32',callback=audio_callback):
-                    while is_playing:
-                        sd.sleep(100)
-            finally:
-                play_button.config(text="▶", font=("Helvetica", 20, "bold"))
-                if next_song_path:
-                    path = next_song_path
-                    next_song_path = None
-                    stop_song()
-                    play_song(play_button, path, list_of_songs, playback_progress, current_time, total_length)
-
-        if play_button["text"] == "▶":
-            is_playing = True
-            try:
-                playback_thread = threading.Thread(target=playback_thread_func, args=(play_button,))
-            except Exception as err:
-                print(f"Error creating playback thread: {err}")
-                return
-            playback_thread.start()
-            play_button.config(text="▐▐", font=("Helvetica", 20, "bold"))
-            print("Playing song")
-        else:
-            is_playing = False
-            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
-            print("Paused song")
-
-            playback_position += 1  # Increment playback position
-
-        playback_position += current_speed
-
-        outdata[:] = output
+        outdata[:len(output)] = output.reshape(outdata[:len(output)].shape)
+        if len(output) < frames:
+            outdata[len(output):] = 0
 
     # Define the playback thread function
     def playback_thread_func(play_button, audio_callback):
@@ -157,8 +124,6 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
                 stop_song()
                 play_song(play_button, path, list_of_songs, playback_progress, current_time, total_length, playback_label)
 
-    global is_playing
-    # Start the playback thread
     if play_button["text"] == "▶":
         is_playing = True
         try:
@@ -167,7 +132,6 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
             print(f"Error creating playback thread: {err}")
             return
         playback_thread.start()
-
         play_button.config(text="▐▐", font=("Helvetica", 20, "bold"))
         print("Playing song")
     else:
@@ -176,9 +140,8 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
         print("Paused song")
         from utils import update_progress_bar
         update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)
-    return current_time, playback_progress["value"], total_length
 
-    
+    return current_time, playback_progress["value"], total_length
 
 
 # Function to stop the song

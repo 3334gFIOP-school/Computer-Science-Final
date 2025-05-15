@@ -31,7 +31,7 @@ def main(repeat):
 
             # Listbox
             self.listbox = tk.Listbox(
-                self.listbox_frame,
+                self.listbox_frame, 
                 selectmode='multiple',
                 yscrollcommand=self.scrollbar.set
             )
