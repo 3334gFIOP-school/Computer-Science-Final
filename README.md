@@ -55,6 +55,7 @@ Short paragraph about you(Each member of the group, includes contact for profess
 Jackson:
 
 Alec:
+I lost the game. I am a computer science project that likes to figure out how to code random things. I've taken multiple python classes, and this was the final for one of them.  
 
 Sawyer:  
 I am a computer science student and I work on python projects.

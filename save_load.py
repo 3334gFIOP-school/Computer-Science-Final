@@ -181,3 +181,14 @@ def list_playlists(playlists):
     for i in playlists:
         playlist_list.append(i)
     return playlist_list
+
+
+
+#functoin to get a list of all song names
+def format_songs_names(csv):
+    songs = list_songs(csv)
+    song_names = []
+    for i in songs:
+        song_names.append(f'{i[0]} --- {i[1]}')
+
+    return song_names
