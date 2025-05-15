@@ -17,7 +17,7 @@ Music Player Tab:
 Playlist Edit Tab:  
 ![image](Playlist_Edit_Tab.png)
 
-What it looks like when you play a song:
+What it looks like when you play a song:  
 ![image](Playing_Song.png)
 
 ## Used Technologies  
