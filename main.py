@@ -153,6 +153,7 @@ def main(repeat):
     def pop_audio(root, ply, file_path, nme):
         from audio import play_song, stop_song, set_volume, get_song_length
         from utils import update_progress_bar
+        global is_playing
 
         playback_position = 0  # Initialize playback position
 
@@ -173,7 +174,7 @@ def main(repeat):
             from_=0.5,
             to=2,
             orient="horizontal",
-            length=1,
+            length=200,
             command=lambda value: set_volume(value, volume_label),  # Calls set_volume from audio.py
         )
         volume_slider.set(0.5)
@@ -230,11 +231,11 @@ def main(repeat):
             print(f"Button clicked: {button['text']}")  # Debugging: Print the button text
             if button["text"] == "▶":
                 is_playing = True
-                play_song(button, file_path, list_of_songs, progress, playback_position, total_length)
-                update_progress_bar(playback_progress, playback_label, total_length, is_playing)  # Pass the progress bar and label
+                play_song(button, file_path, list_of_songs, playback_progress, playback_position, total_length, playback_label)
+                update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)  # Pass the progress bar and label
             else:
                 is_playing = False
-                play_song(button, file_path, list_of_songs, progress, playback_position, total_length)
+                play_song(button, file_path, list_of_songs, playback_progress, playback_position, total_length, playback_label)
 
     def create_plylst(root): #function to create a playlist
         clear_frame(plylst)
