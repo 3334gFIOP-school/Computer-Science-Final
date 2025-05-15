@@ -10,11 +10,11 @@ Not used for this class.
 
 ## Execution And Usage  
 ---
-You can switch inbetween the tabs to different things. You can create playlists, delete playlists, edit playlists, and show playlists in the playlist edit tab. In the Music Player tab you pick a playlist to use and then it will play the songs in that playlist. You can also change the volume and speed of the song.
+You can switch inbetween the tabs to different things. You can create playlists, delete playlists, edit playlists, and show playlists in the playlist edit tab. In the Music Player tab you pick a playlist to use and then it will play the songs in that playlist. You can also change the volume and speed of the song.  
 Music Player Tab:  
 ![image](Music_Player_Tab.png)  
   
-Playlist Edit Tab:
+Playlist Edit Tab:  
 ![image](Playlist_Edit_Tab.png)
 
 ## Used Technologies  
