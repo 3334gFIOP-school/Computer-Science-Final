@@ -1,7 +1,7 @@
 name,path,playlists
-alarm,Audio/alarm.wav,"['all songs', '  f  Fe fsef se fsd f']"
-Desmeon,Audio/Desmeon - Hellcat.wav,"['all songs', 'haha']"
-Normal Sound Effect,Audio/normal sound effect.wav,"['all songs', 'things', '  f  Fe fsef se fsd f']"
-Disfigure,Audio/Disfigure - Blank.wav,"['all songs', 'banana', '  f  Fe fsef se fsd f']"
-Elektronoma,Audio/Elektronomia - Summersong.wav,['banana']
+alarm,Audio/alarm.wav,"['all songs', '  f  Fe fsef se fsd f', 'test']"
+Desmeon,Audio/Desmeon - Hellcat.wav,"['all songs', 'haha', 'sawyer is the best', 'test']"
+Normal Sound Effect,Audio/normal sound effect.wav,"['all songs', '  f  Fe fsef se fsd f', 'things']"
+Disfigure,Audio/Disfigure - Blank.wav,"['all songs', '  f  Fe fsef se fsd f', 'banana']"
 Egzod,Audio/Egzod - Rise Up.wav,['  f  Fe fsef se fsd f']
+Elektronoma,Audio/Elektronomia - Summersong.wav,['banana']

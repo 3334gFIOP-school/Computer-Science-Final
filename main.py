@@ -111,7 +111,6 @@ def main(repeat):
     populate_menu()
 
     def pick_plylst(root):
-
         def clear_frame(frame):
             print(f"Clearing frame: {frame}")  # Debugging: Print which frame is being cleared
             for widget in frame.winfo_children():
@@ -123,10 +122,25 @@ def main(repeat):
 
         def pck():
             nme = lstbox.curselection()
+            if not nme:
+                print("No playlist selected.")
+                return
+
+            # Get the selected playlist name
+            selected_playlist = playlist_names(playlists)[nme[0]]
+
+            # Get the list of song paths for the selected playlist
+            song_paths = playlist_song_paths(playlists, selected_playlist)
+
+            if not song_paths:
+                print("No songs in the selected playlist.")
+                return
+
+            # Pass the first song in the playlist to pop_audio
             clear_frame(ply_sng)
-            # This is someone else's ############################################################################################
-            pop_audio(root, ply, "Audio\\normal sound effect.wav", nme) # Make the file path an actual variable that becomes the link from a selection from the playlist in a menu ==================================================================================================================================================================
-        options = playlist_names(playlists) #get playlist names ###################################################################################            EEEEEEEEEEEEEEEE
+            pop_audio(root, ply, song_paths[0], nme)  # Use the first song in the playlist
+
+        options = playlist_names(playlists)  # Get playlist names
 
         # Scrollbar
         scrollbar = tk.Scrollbar(ply_sng, orient='vertical')
@@ -148,6 +162,7 @@ def main(repeat):
             lstbox.insert(tk.END, option)
 
         ttk.Button(ply_sng, text="Pick playlist", command=pck).pack()
+
     pick_plylst(root)
 
     def pop_audio(root, ply, file_path, nme):
