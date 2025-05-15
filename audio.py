@@ -117,7 +117,10 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
                 while is_playing:
                     sd.sleep(100)
         finally:
-            play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+            try:
+                play_button.config(text="▶", font=("Helvetica", 20, "bold"))
+            except Exception as err:
+                print(f"Error updating play button: {err}")
             if next_song_path:
                 path = next_song_path
                 next_song_path = None
