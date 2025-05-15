@@ -188,8 +188,8 @@ def main(repeat):
 
         volume_slider = ttk.Scale(
             ply_sng,
-            from_=0.5,
-            to=2,
+            from_=0.0,
+            to=1.0,
             orient="horizontal",
             length=200,
             command=lambda value: set_volume(value, volume_label),  # Calls set_volume from audio.py
@@ -232,12 +232,34 @@ def main(repeat):
 
         # Start updating the progress bar when playback starts
         total_length = get_song_length(file_path)  # Get the total length of the song
-        update_progress_bar(playback_progress, playback_label, total_length, is_playing)
+        update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)
         # Play/Pause button
+        
+        from utils import safe_update_progress_bar
+
+        playback_position = safe_update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)
+        # Ensure playback_position is a valid number
+        if not isinstance(playback_position, (int, float)) or playback_position < 0:
+            playback_position = 0
+        else:
+            try:
+                from utils import playback_position
+                playback_position = update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)  # Update the global variable with the new value
+            except Exception as e:
+                print(f"Error updating playback position: {e}")
+                playback_position = 0
+
         pse_ply = tk.Button(
             ply_sng,
             text="▶",
-            command=lambda: toggle_play_pause(pse_ply, file_path, lambda: update_progress_bar(playback_progress, playback_label, total_length, is_playing), playback_position, total_length, playlist_song_paths(playlists,list_playlists(playlists)[nme[0]])), # Alec this is where the function that finds the list of the songs in the playlist should go
+            command=lambda: toggle_play_pause(
+                pse_ply,
+                file_path,
+                playback_position,  # Pass the updated playback_position directly
+                playback_position,
+                total_length,
+                playlist_song_paths(playlists, list_playlists(playlists)[nme[0]])
+            ),
             font=attention,
         )
         pse_ply.grid(row=1, column=1, padx=10, pady=10)
