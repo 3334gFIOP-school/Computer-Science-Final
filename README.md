@@ -4,10 +4,6 @@
 ---
 This is our final team project for Computer Science 2! It plays songs.  
 
-## Installation  
----
-Not used for this class.  
-
 ## Execution And Usage  
 ---
 You can switch inbetween the tabs to different things. You can create playlists, delete playlists, edit playlists, and show playlists in the playlist edit tab. In the Music Player tab you pick a playlist to use and then it will play the songs in that playlist. You can also change the volume and speed of the song.  
