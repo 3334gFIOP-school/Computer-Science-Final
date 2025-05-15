@@ -172,6 +172,7 @@ def playlist_song_paths(playlists, name):
     paths = []
     for i in songs:
         paths.append(i[1])
+    print(paths)
     return paths
 
 
