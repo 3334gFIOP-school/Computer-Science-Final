@@ -17,6 +17,9 @@ Music Player Tab:
 Playlist Edit Tab:  
 ![image](Playlist_Edit_Tab.png)
 
+What it looks like when you play a song:
+![image](Playing_Song.png)
+
 ## Used Technologies  
 ---
 
@@ -44,10 +47,6 @@ Playlist Edit Tab:
 + You can change the volume and speed  
 + Add songs and customize playlists  
 
-## Contributions  
----
-Not used for this class.  
-
 ## Contributors  
 ---
 + Copilot - Helping with using libraries and debugging  
@@ -68,11 +67,3 @@ Sawyer:
 I am a computer science student and I work on python projects.
 
 Vincent:
-
-## Change Log  
----
-Not used for this class.  
-
-## License
----
-Not used for this class. Open source :p
