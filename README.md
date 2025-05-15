@@ -16,7 +16,7 @@ Music Player Tab:
   
 Playlist Edit Tab:  
 ![image](Playlist_Edit_Tab.png)
-
+  
 What it looks like when you play a song:  
 ![image](Playing_Song.png)
 
@@ -50,10 +50,6 @@ What it looks like when you play a song:
 ## Contributors  
 ---
 + Copilot - Helping with using libraries and debugging  
-+ Person who helped 2 - what they did  
-+ Person who helped 3 - what they did  
-+ Person who helped 4 - what they did  
-+ Person who helped 5 - what they did  
 
 ## Author's Information  
 ---
