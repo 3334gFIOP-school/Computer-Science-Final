@@ -1,10 +1,7 @@
 # Alec George
 
 
-
 # functions to save and load songs to csv and convert them into a readable format
-
-
 
 
 import pandas as pd
@@ -172,6 +169,7 @@ def playlist_song_paths(playlists, name):
     paths = []
     for i in songs:
         paths.append(i[1])
+    print(paths)
     return paths
 
 
