@@ -138,6 +138,8 @@ def main(repeat):
 
             # Pass the first song in the playlist to pop_audio
             clear_frame(ply_sng)
+            # This is someone else's ############################################################################################
+      
             pop_audio(root, ply, song_paths[0], nme)  # Use the first song in the playlist
 
         options = playlist_names(playlists)  # Get playlist names
