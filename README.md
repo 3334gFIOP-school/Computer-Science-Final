@@ -6,8 +6,16 @@ This is our final team project for Computer Science 2! It plays songs.
 
 ## Execution And Usage  
 ---
-You can switch inbetween the tabs to different things. You can create playlists, delete playlists, edit playlists, and show playlists in the playlist edit tab. In the Music Player tab you pick a playlist to use and then it will play the songs in that playlist. You can also change the volume and speed of the song.
-![image](relative path to the immage NOTE: Image has to be saved in the repository REMOINER: Show what the project looks like when it is running)  
+You can switch inbetween the tabs to different things. You can create playlists, delete playlists, edit playlists, and show playlists in the playlist edit tab. In the Music Player tab you pick a playlist to use and then it will play the songs in that playlist. You can also change the volume and speed of the song.  
+  
+Music Player Tab:  
+![image](Music_Player_Tab.png)  
+  
+Playlist Edit Tab:  
+![image](Playlist_Edit_Tab.png)
+  
+What it looks like when you play a song:  
+![image](Playing_Song.png)
 
 ## Used Technologies  
 ---
@@ -37,7 +45,6 @@ You can switch inbetween the tabs to different things. You can create playlists,
 + Add songs and customize playlists  
 
 ## Contributors  
----
 + Jackson
 + Alec
 + Sawyer
@@ -54,6 +61,7 @@ Jackson:
 Computer science student who really likes to code lots of fun stuff! Contact me at jackson.hauley@ucas-edu.net
 
 Alec:
+I lost the game. I am a computer science project that likes to figure out how to code random things. I've taken multiple python classes, and this was the final for one of them.  
 
 Sawyer:  
 I am a computer science student and I work on python projects.

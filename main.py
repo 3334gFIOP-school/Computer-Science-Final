@@ -59,7 +59,7 @@ def main(repeat):
             #update playlists, adding and removing songs
             playlists[export[0]] = []
             for i in export[1]:
-                playlists[export[0]].append(list(i))
+                playlists[export[0]].append(i.split(' --- '))
 
             print(playlists)
             playlists_to_save(playlists, 'songs.csv')
@@ -262,7 +262,7 @@ def main(repeat):
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
             root.geometry("")
-            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
+            options = format_songs_names('songs.csv') #Figure out how to integrate this later ===========================================================
 
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme.get())
@@ -273,7 +273,7 @@ def main(repeat):
             clear_button.pack(pady=10)
 
             # Add a button to print selected items
-            show_button = tk.Button(plylst, text="Add items to playlist", command=listbox.print_selected_items)
+            show_button = tk.Button(plylst, text="Create playlist with selected items", command=listbox.print_selected_items)
             show_button.pack(pady=10)
 
 
@@ -294,9 +294,10 @@ def main(repeat):
             root.geometry("")
             nme = option[nme[0]]
 
-            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
-            preselected_indices = song_index('songs.csv', playlists, nme)  # Integrate this with everything else ###################################################################################
+            options = format_songs_names('songs.csv') #get list of all songs
+            preselected_indices = song_index('songs.csv', playlists, nme)  #select songs already in the playlist
 
+            
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme, preselected_indices)
             listbox.pack(padx=10, pady=10, fill='both', expand=True)
@@ -370,7 +371,7 @@ def main(repeat):
         for option in options:
             lstbox.insert(tk.END, option)
 
-        ttk.Button(plylst, text="Pick playlist", command=del_plylst).pack()
+        ttk.Button(plylst, text="Delete selected\n       playlist", command=del_plylst).pack()
 
     def show_plylst(root):
         clear_frame(plylst)
@@ -404,7 +405,8 @@ def main(repeat):
 
             # Populate the Listbox with options
             for option in options:
-                ltbox.insert(tk.END, option)
+                ltbox.insert(tk.END, f'{option[0]}')
+                print(option)
 
             ttk.Button(plylst, text="Go back", command=back).pack()
             
@@ -429,7 +431,7 @@ def main(repeat):
         for option in options:
             lstbox.insert(tk.END, option)
 
-        ttk.Button(plylst, text="Pick playlist", command=lambda: show_songs(options)).pack()
+        ttk.Button(plylst, text="Show songs in\nselected playlist", command=lambda: show_songs(options)).pack()
 
 
 
