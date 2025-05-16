@@ -347,9 +347,22 @@ def main(repeat):
             pop_plylst()
 
             #remove selected playlists
+            message = playlist_names(playlists)[nme[0]]
             playlists.pop(playlist_names(playlists)[nme[0]])
             playlists_to_save(playlists, 'songs.csv')
 
+
+            #show that playlist was deleted
+            try:
+                # Export ans save here
+                pass
+                messagebox.showerror(title="Export", message=f"Deleted {message} playlist")
+                clear_frame(plylst)
+                pop_plylst()
+                
+            except Exception as e:
+                messagebox.showerror(title="Export", message=f"Failed to delete {message} playlist")
+            
         options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
