@@ -166,7 +166,7 @@ def main(repeat):
         ttk.Button(ply_sng, text="Pick playlist", command=pck).pack()
 
     pick_plylst(root)
-
+    #Rid of pycache
     def pop_audio(root, ply, file_path, nme):
         from audio import play_song, stop_song, set_volume, get_song_length
         from utils import update_progress_bar
