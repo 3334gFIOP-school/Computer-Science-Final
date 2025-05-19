@@ -55,7 +55,6 @@ What it looks like when you play a song:
 
 ## Author's Information  
 ---
-Short paragraph about you(Each member of the group, includes contact for professional)
 
 Jackson:
 Computer science student who really likes to code lots of fun stuff! Contact me at jackson.hauley@ucas-edu.net
