@@ -35,6 +35,8 @@ def change_speed(speed_slider, speed_label):  # Changes the speed
 def play_song(play_button, file_path, list_of_songs, playback_progress, current_time, total_length, playback_label):
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path
 
+    print("Initializing playback...")  # Debugging
+
     if not playback_position:
         playback_position = 0
 
@@ -42,6 +44,7 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
     volume = 0.5
     try:
         if audio_data is None or sample_rate is None:
+            print(f"Loading audio file: {file_path}")  # Debugging
             sample_rate, data = read(file_path)
             if data.ndim > 1:
                 print("Stereo audio detected.")
@@ -60,8 +63,10 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
     def audio_callback(outdata, frames, time, status):
         global playback_position, is_playing, stop_bar2, next_song_path
 
-        if not is_playing:
-            raise sd.CallbackStop()
+        print("Audio callback triggered.")  # Debugging
+
+        if status:
+            print(f"Audio callback status: {status}")  # Debugging
 
         channels = 2 if audio_data.ndim > 1 else 1
         output = np.zeros((frames, channels) if channels > 1 else (frames,), dtype=np.float32)
@@ -69,85 +74,26 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
         for i in range(frames):
             pos = int(playback_position)
             if pos >= len(audio_data):
-                print("Song Ended")
+                print("Song Ended")  # Debugging
                 stop_bar2 = True
                 is_playing = False
-
-                if list_of_songs:
-                    next_song_path = list_of_songs.pop(0)
-                    print(f"Loading next song: {next_song_path}")
-                    stop_song()
-
-                    playback_position = 0
-                    playback_progress["value"] = 0
-                    playback_label.config(text="Position: 0s")
-                    total_length = get_song_length(next_song_path)
-
-                    from utils import update_progress_bar
-                    is_playing = True
-                    playback_position = update_progress_bar(
-                        playback_progress, playback_label, total_length, is_playing, playback_position)
-
-                    play_song(play_button, next_song_path, list_of_songs,
-                              playback_progress, playback_position, total_length, playback_label)
-                else:
-                    from main import pick_plylst
-                    print("No more songs in the list. Returning to main menu.")
-                    pick_plylst()
                 raise sd.CallbackStop()
 
-            next_pos = min(pos + 1, len(audio_data) - 1)
-            fraction = playback_position - pos
-            if channels == 1:
-                sample = (1 - fraction) * audio_data[pos] + fraction * audio_data[next_pos]
-                output[i] = sample * volume
-            else:
-                sample = (1 - fraction) * audio_data[pos, :] + fraction * audio_data[next_pos, :]
-                output[i, :] = sample * volume
+            output[i] = audio_data[pos] * volume
+            playback_position += current_speed
 
+        outdata[:] = output
 
-
-        outdata[:len(output)] = output.reshape(outdata[:len(output)].shape)
-        if len(output) < frames:
-            outdata[len(output):] = 0
-
-    # Define the playback thread function
-    def playback_thread_func(play_button, audio_callback):
-        global is_playing, next_song_path
-        channels = 2 if audio_data.ndim > 1 else 1
-        try:
-            with sd.OutputStream(samplerate=sample_rate, channels=channels, dtype='float32', callback=audio_callback):
-                while is_playing:
-                    sd.sleep(100)
-        finally:
-            try:
-                play_button.config(text="▶", font=("Helvetica", 20, "bold"))
-            except Exception as err:
-                print(f"Error updating play button: {err}")
-            if next_song_path:
-                path = next_song_path
-                next_song_path = None
-                stop_song()
-                play_song(play_button, path, list_of_songs, playback_progress, current_time, total_length, playback_label)
-
-    if play_button["text"] == "▶":
+    # Start the playback stream
+    try:
+        print("Starting playback stream...")  # Debugging
+        stream = sd.OutputStream(callback=audio_callback, samplerate=sample_rate, channels=2)
+        stream.start()
         is_playing = True
-        try:
-            playback_thread = threading.Thread(target=playback_thread_func, args=(play_button, audio_callback))
-        except Exception as err:
-            print(f"Error creating playback thread: {err}")
-            return
-        playback_thread.start()
-        play_button.config(text="▐▐", font=("Helvetica", 20, "bold"))
-        print("Playing song")
-    else:
-        is_playing = False
-        play_button.config(text="▶", font=("Helvetica", 20, "bold"))
-        print("Paused song")
-        from utils import update_progress_bar
-        update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)
-
-    return current_time, playback_progress["value"], total_length
+        print("Playback started.")  # Debugging
+    except Exception as e:
+        print(f"Error starting playback stream: {e}")  # Debugging
+        return
 
 
 # Function to stop the song
