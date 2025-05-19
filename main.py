@@ -166,7 +166,7 @@ def main(repeat):
         ttk.Button(ply_sng, text="Pick playlist", command=pck).pack()
 
     pick_plylst(root)
-
+    #Rid of pycache
     def pop_audio(root, ply, file_path, nme):
         from audio import play_song, stop_song, set_volume, get_song_length
         from utils import update_progress_bar
@@ -369,9 +369,22 @@ def main(repeat):
             pop_plylst()
 
             #remove selected playlists
+            message = playlist_names(playlists)[nme[0]]
             playlists.pop(playlist_names(playlists)[nme[0]])
             playlists_to_save(playlists, 'songs.csv')
 
+
+            #show that playlist was deleted
+            try:
+                # Export ans save here
+                pass
+                messagebox.showerror(title="Export", message=f"Deleted {message} playlist")
+                clear_frame(plylst)
+                pop_plylst()
+                
+            except Exception as e:
+                messagebox.showerror(title="Export", message=f"Failed to delete {message} playlist")
+            
         options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
