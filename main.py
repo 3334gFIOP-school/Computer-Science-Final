@@ -243,7 +243,6 @@ def main(repeat):
             playback_position = 0
         else:
             try:
-                from utils import playback_position
                 playback_position = update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)  # Update the global variable with the new value
             except Exception as e:
                 print(f"Error updating playback position: {e}")
