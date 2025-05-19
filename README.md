@@ -55,7 +55,6 @@ What it looks like when you play a song:
 
 ## Author's Information  
 ---
-Short paragraph about you(Each member of the group, includes contact for professional)
 
 Jackson:
 Computer science student who really likes to code lots of fun stuff! Contact me at jackson.hauley@ucas-edu.net
@@ -67,3 +66,4 @@ Sawyer:
 I am a computer science student and I work on python projects.
 
 Vincent:
+I am an aspiring Python developer and am currently in high school. He has made a lot of projects for school and am involved in the cybersecurity community. I have been mentored by my father and uncle, who both work in the cybersecurity industry. I has some experience in Java and mainly codes using Python.
