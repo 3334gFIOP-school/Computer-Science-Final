@@ -170,6 +170,7 @@ def main(repeat):
     def pop_audio(root, ply, file_path, nme):
         from audio import play_song, stop_song, set_volume, get_song_length
         from utils import update_progress_bar
+
         global is_playing
 
         playback_position = 0  # Initialize playback position
@@ -267,6 +268,7 @@ def main(repeat):
         def toggle_play_pause(button, file_path, progress, playback_position, total_length, list_of_songs):
             global is_playing
             print(f"Button clicked: {button['text']}")  # Debugging: Print the button text
+            
             if button["text"] == "▶":
                 is_playing = True
                 play_song(button, file_path, list_of_songs, playback_progress, playback_position, total_length, playback_label)
