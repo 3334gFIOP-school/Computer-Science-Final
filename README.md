@@ -67,3 +67,4 @@ Sawyer:
 I am a computer science student and I work on python projects.
 
 Vincent:
+I am an aspiring Python developer and am currently in high school. He has made a lot of projects for school and am involved in the cybersecurity community. I have been mentored by my father and uncle, who both work in the cybersecurity industry. I has some experience in Java and mainly codes using Python.
