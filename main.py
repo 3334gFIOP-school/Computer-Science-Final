@@ -59,7 +59,7 @@ def main(repeat):
             #update playlists, adding and removing songs
             playlists[export[0]] = []
             for i in export[1]:
-                playlists[export[0]].append(list(i))
+                playlists[export[0]].append(i.split(' --- '))
 
             print(playlists)
             playlists_to_save(playlists, 'songs.csv')
@@ -166,7 +166,7 @@ def main(repeat):
         ttk.Button(ply_sng, text="Pick playlist", command=pck).pack()
 
     pick_plylst(root)
-
+    #Rid of pycache
     def pop_audio(root, ply, file_path, nme):
         from audio import play_song, stop_song, set_volume, get_song_length
         from utils import update_progress_bar
@@ -188,8 +188,8 @@ def main(repeat):
 
         volume_slider = ttk.Scale(
             ply_sng,
-            from_=0.5,
-            to=2,
+            from_=0.0,
+            to=1.0,
             orient="horizontal",
             length=200,
             command=lambda value: set_volume(value, volume_label),  # Calls set_volume from audio.py
@@ -232,12 +232,34 @@ def main(repeat):
 
         # Start updating the progress bar when playback starts
         total_length = get_song_length(file_path)  # Get the total length of the song
-        update_progress_bar(playback_progress, playback_label, total_length, is_playing)
+        update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)
         # Play/Pause button
+        
+        from utils import safe_update_progress_bar
+
+        playback_position = safe_update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)
+        # Ensure playback_position is a valid number
+        if not isinstance(playback_position, (int, float)) or playback_position < 0:
+            playback_position = 0
+        else:
+            try:
+                from utils import playback_position
+                playback_position = update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)  # Update the global variable with the new value
+            except Exception as e:
+                print(f"Error updating playback position: {e}")
+                playback_position = 0
+
         pse_ply = tk.Button(
             ply_sng,
             text="▶",
-            command=lambda: toggle_play_pause(pse_ply, file_path, lambda: update_progress_bar(playback_progress, playback_label, total_length, is_playing), playback_position, total_length, playlist_song_paths(playlists,list_playlists(playlists)[nme[0]])), # Alec this is where the function that finds the list of the songs in the playlist should go
+            command=lambda: toggle_play_pause(
+                pse_ply,
+                file_path,
+                playback_position,  # Pass the updated playback_position directly
+                playback_position,
+                total_length,
+                playlist_song_paths(playlists, list_playlists(playlists)[nme[0]])
+            ),
             font=attention,
         )
         pse_ply.grid(row=1, column=1, padx=10, pady=10)
@@ -262,7 +284,7 @@ def main(repeat):
             print(f"Playlist name: {nme.get()}")  # Debugging: Print the playlist name
             clear_frame(plylst)
             root.geometry("")
-            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
+            options = format_songs_names('songs.csv') #Figure out how to integrate this later ===========================================================
 
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme.get())
@@ -273,7 +295,7 @@ def main(repeat):
             clear_button.pack(pady=10)
 
             # Add a button to print selected items
-            show_button = tk.Button(plylst, text="Add items to playlist", command=listbox.print_selected_items)
+            show_button = tk.Button(plylst, text="Create playlist with selected items", command=listbox.print_selected_items)
             show_button.pack(pady=10)
 
 
@@ -294,9 +316,10 @@ def main(repeat):
             root.geometry("")
             nme = option[nme[0]]
 
-            options = list_songs('songs.csv') #Figure out how to integrate this later ===========================================================
-            preselected_indices = song_index('songs.csv', playlists, nme)  # Integrate this with everything else ###################################################################################
+            options = format_songs_names('songs.csv') #get list of all songs
+            preselected_indices = song_index('songs.csv', playlists, nme)  #select songs already in the playlist
 
+            
             # Create and pack the MultiSelectListbox
             listbox = MultiSelectListbox(plylst, options, nme, preselected_indices)
             listbox.pack(padx=10, pady=10, fill='both', expand=True)
@@ -346,9 +369,22 @@ def main(repeat):
             pop_plylst()
 
             #remove selected playlists
+            message = playlist_names(playlists)[nme[0]]
             playlists.pop(playlist_names(playlists)[nme[0]])
             playlists_to_save(playlists, 'songs.csv')
 
+
+            #show that playlist was deleted
+            try:
+                # Export ans save here
+                pass
+                messagebox.showerror(title="Export", message=f"Deleted {message} playlist")
+                clear_frame(plylst)
+                pop_plylst()
+                
+            except Exception as e:
+                messagebox.showerror(title="Export", message=f"Failed to delete {message} playlist")
+            
         options = playlist_names(playlists) #Integrate this with everything else ###################################################################################               EEEEEEEEEEEEEEEEEE
 
         # Scrollbar
@@ -370,7 +406,7 @@ def main(repeat):
         for option in options:
             lstbox.insert(tk.END, option)
 
-        ttk.Button(plylst, text="Pick playlist", command=del_plylst).pack()
+        ttk.Button(plylst, text="Delete selected\n       playlist", command=del_plylst).pack()
 
     def show_plylst(root):
         clear_frame(plylst)
@@ -404,7 +440,8 @@ def main(repeat):
 
             # Populate the Listbox with options
             for option in options:
-                ltbox.insert(tk.END, option)
+                ltbox.insert(tk.END, f'{option[0]}')
+                print(option)
 
             ttk.Button(plylst, text="Go back", command=back).pack()
             
@@ -429,7 +466,7 @@ def main(repeat):
         for option in options:
             lstbox.insert(tk.END, option)
 
-        ttk.Button(plylst, text="Pick playlist", command=lambda: show_songs(options)).pack()
+        ttk.Button(plylst, text="Show songs in\nselected playlist", command=lambda: show_songs(options)).pack()
 
 
 

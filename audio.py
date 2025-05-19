@@ -34,6 +34,10 @@ def change_speed(speed_slider, speed_label):  # Changes the speed
 # Function to play the song
 def play_song(play_button, file_path, list_of_songs, playback_progress, current_time, total_length, playback_label):
     global is_playing, current_speed, audio_data, sample_rate, playback_thread, playback_position, volume, next_song_path
+
+    if not playback_position:
+        playback_position = 0
+
     current_speed = 1.0
     volume = 0.5
     try:
@@ -82,8 +86,7 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
                     from utils import update_progress_bar
                     is_playing = True
                     playback_position = update_progress_bar(
-                        playback_progress, playback_label, total_length, is_playing, playback_position
-                    )
+                        playback_progress, playback_label, total_length, is_playing, playback_position)
 
                     play_song(play_button, next_song_path, list_of_songs,
                               playback_progress, playback_position, total_length, playback_label)
@@ -102,7 +105,7 @@ def play_song(play_button, file_path, list_of_songs, playback_progress, current_
                 sample = (1 - fraction) * audio_data[pos, :] + fraction * audio_data[next_pos, :]
                 output[i, :] = sample * volume
 
-            playback_position += current_speed
+
 
         outdata[:len(output)] = output.reshape(outdata[:len(output)].shape)
         if len(output) < frames:
@@ -179,11 +182,3 @@ def get_song_length(file_path):
     except Exception as e:
         print(f"Error getting song length: {e}")
         return 0
-
-
-# Function to seek to a specific position in the song
-def seek_to_position(seconds):
-    global playback_position, sample_rate
-    if sample_rate:
-        playback_position = seconds * sample_rate
-        print(f"Seeking to {seconds}s, which is {playback_position} samples.")

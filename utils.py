@@ -1,4 +1,9 @@
-def update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position=0):
+def safe_update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position):
+    if playback_progress:  # Check if playback_progress has a value
+        return update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position)
+    return playback_progress  # Return the original value if no update is needed
+
+def update_progress_bar(playback_progress, playback_label, total_length, is_playing, playback_position):
     """
     Updates the playback progress bar and label dynamically.
     """
@@ -6,7 +11,7 @@ def update_progress_bar(playback_progress, playback_label, total_length, is_play
 
     # Store the ID of the scheduled `after` call
     if not hasattr(update_progress_bar, "after_id"):
-        update_progress_bar.after_id = None
+        update_progress_bar.after_id = None        # utils.py
 
     if is_playing:
         # Cancel any previously scheduled `after` call
