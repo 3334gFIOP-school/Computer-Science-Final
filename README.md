@@ -61,7 +61,7 @@ Jackson:
 Computer science student who really likes to code lots of fun stuff! Contact me at jackson.hauley@ucas-edu.net
 
 Alec:
-I lost the game. I am a computer science project that likes to figure out how to code random things. I've taken multiple python classes, and this was the final for one of them.  
+I lost the game. I am a computer science project that likes to figure out how to code random things. I've taken multiple python classes, and this was the final for one of them. To contact, email at alec.george@ucas-edu.net  
 
 Sawyer:  
 I am a computer science student and I work on python projects.
